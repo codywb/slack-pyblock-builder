@@ -1,5 +1,5 @@
 from typing import Self
-from objects.text import Text
+from pyblock_builder.objects.text import Text
 
 
 class Image:
