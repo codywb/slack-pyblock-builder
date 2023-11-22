@@ -1,6 +1,6 @@
 from typing import Self
 from datetime import date, datetime
-from objects.text import Text
+from pyblock_builder.objects.text import Text
 
 
 class DatePicker:
