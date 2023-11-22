@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "pyblock-builder"
+version = "0.1.0"
+description = "Library simplifying building apps using Slack's Block Kit UI framework"
+authors = ["codywb <codybranscum@gmail.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+homepage = "https://github.com/codywb/slack-pyblock-builder"
+repository = "https://github.com/codywb/slack-pyblock-builder"
+keywords = ["slack-pyblock-builder", "pyblock-builder", "slack", "bolt", "pyblock", "blockkit"]
+classifiers = [
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+include = [
+    "LICENSE",
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
