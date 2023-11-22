@@ -5,7 +5,6 @@
 ---
 ![img](https://img.shields.io/pypi/v/pyblock-builder.svg)
 ![img](https://img.shields.io/pypi/pyversions/pyblock-builder.svg)
-![img](https://img.shields.io/pypi/pypi/dm/pyblock-builder.svg)
 
 ## 💡 Features
 
