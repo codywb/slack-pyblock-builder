@@ -229,7 +229,7 @@ class Message:
         Uses the attributes set on the class to generate a message payload and passes it to either the chat.postMessage
         or chat.postEphemeral Web API methods of the Slack Bolt for Python client depending on the value of is_ephemeral.
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :return: nothing
+        :return: Slack API response
         """
         payload = {}
         for k, v in self.__dict__.items():
@@ -237,34 +237,37 @@ class Message:
                 payload[k.strip("_")] = v
 
         if self._is_ephemeral:
-            slack_client.chat_postEphemeral(**payload)
+            result = slack_client.chat_postEphemeral(**payload)
         elif self._post_at:
-            slack_client.chat_scheduleMessage(**payload)
+            result = slack_client.chat_scheduleMessage(**payload)
         else:
-            slack_client.chat_postMessage(**payload)
+            result = slack_client.chat_postMessage(**payload)
+        return result
 
     def delete(self, slack_client):
         """
         Deletes an existing message
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :return: nothing
+        :return: Slack API response
         """
         payload = {}
         for k, v in self.__dict__.items():
             if v:
                 payload[k.strip("_")] = v
 
-        slack_client.chat_delete(**payload)
+        result = slack_client.chat_delete(**payload)
+        return result
 
     def update(self, slack_client):
         """
         Updates an existing message
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :return: nothing
+        :return: Slack API response
         """
         payload = {}
         for k, v in self.__dict__.items():
             if v:
                 payload[k.strip("_")] = v
 
-        slack_client.chat_update(**payload)
+        result = slack_client.chat_update(**payload)
+        return result
