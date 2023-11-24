@@ -1,4 +1,5 @@
 from typing import Self
+from datetime import datetime
 
 class Message:
     """
@@ -14,6 +15,7 @@ class Message:
         self._thread_ts = ""
         self._mrkdwn = True
         self._as_user = None
+        self._post_at = ""
         self._icon_emoji = ""
         self._icon_url = ""
         self._link_names = None
@@ -120,6 +122,18 @@ class Message:
         self._as_user = True
         return self
 
+    def post_at(self, post_at: str | datetime) -> Self:
+        """
+        (Optional) Sets the date and time for a scheduled message to be posted.
+        :param post_at: String with a Unix timestamp or Python datetime object
+        :return: self
+        """
+        if isinstance(post_at, datetime):
+            self._post_at = post_at.timestamp()
+        else:
+            self._post_at = post_at
+        return self
+
     def set_icon_emoji(self, emoji_string: str) -> Self:
         """
         (Optional) Sets the emoji to use as the icon for this message. Overrides icon_url.
@@ -149,7 +163,8 @@ class Message:
     def add_metadata(self, metadata: str) -> Self:
         """
         (Optional) Add JSON object with event_type and event_payload fields, presented as a URL-encoded string. Metadata
-        posted to Slack is accessible to any app or user who is a member of that workspace.
+        posted to Slack is accessible to any app or user who is a member of that workspace. WARNING: Setting this
+        attribute will prevent a scheduled message from being posted.
         :param metadata: JSON object as URL-encoded string
         :return: self
         """
@@ -223,6 +238,8 @@ class Message:
 
         if self._is_ephemeral:
             slack_client.chat_postEphemeral(**payload)
+        elif self._post_at:
+            slack_client.chat_scheduleMessage(**payload)
         else:
             slack_client.chat_postMessage(**payload)
 
