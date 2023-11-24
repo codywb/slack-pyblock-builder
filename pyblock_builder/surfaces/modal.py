@@ -164,7 +164,29 @@ class Modal:
         :return: nothing
         """
         slack_client.views_push(
+            trigger_id=request_body["trigger_id"],
             view_id=request_body["view"]["id"],
             hash=request_body["view"]["hash"],
             view=self.view
         )
+
+    def update_view_from_submission(self, ack):
+        """
+        Uses the attributes set on the class to generate a view payload and update a view by passing a response_action
+        of type "update" with a newly composed view. Use when responding to a views_submission request (i.e., when a
+        views payload includes any input blocks).
+        :param ack: the ack() function received from the Slack Bolt for Python framework
+        :return: nothing
+        """
+        ack(response_action="update", view=self.view)
+
+    def push_view_from_submission(self, ack):
+        """
+        Uses the attributes set on the class to generate a view payload and push a new view on top of an existing view
+        by passing a response_action of type "push" with the newly composed view. Only two additional views may be
+        pushed after opening a Modal. Use when responding to a views_submission request (i.e., when a
+        views payload includes any input blocks).
+        :param ack: the ack() function received from the Slack Bolt for Python framework
+        :return: nothing
+        """
+        ack(response_action="push", view=self.view)
