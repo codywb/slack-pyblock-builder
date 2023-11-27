@@ -7,7 +7,7 @@ else:
 class OverflowMenu:
     """
     A Python class representing an Overflow menu element from the Slack BlockKit UI framework\n
-    Can be added to: Section, Actions
+    Can be added to: Section, Actions\n
     Works on: Modal, Message, AppHome
     """
     def __init__(self):
