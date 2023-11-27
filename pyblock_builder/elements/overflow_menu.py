@@ -21,6 +21,16 @@ class OverflowMenu:
             "options": self._options
         }
 
+    def set_action_id(self, action_id: str) -> Self:
+        """
+        (Optional) Sets the action_id of the Block element which identifies the source of the action in the JSON payload
+        :param action_id: String; must be unique within a single block, max 255 chars
+        :return: self
+        """
+        self._action_id = action_id
+        self.json["action_id"] = self._action_id
+        return self
+
     def set_confirm_dialog(self, confirm_dialog) -> Self:
         """
         (Optional) Adds a confirmation dialog to be displayed after a menu item is selected
