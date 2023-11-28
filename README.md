@@ -27,7 +27,8 @@
 ```python 
 pip install pyblock-builder
 ```
-**Note:** Depending on your individual environment settings, macOS/Linux users may need to use `pip3` instead of `pip`.
+###### **Note:** Depending on your individual environment settings, macOS/Linux users may need to use `pip3` instead of `pip`.
+
 ## :two: Usage
 
 **PyBlock Builder** is made up of the following components:
