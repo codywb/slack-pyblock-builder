@@ -154,7 +154,7 @@ painless as possible.
     (Message()
      .add_blocks(
         Section()
-        .set_text(f"Johnny, what can you make of this? {md.emoji('airplane')}"),
+        .set_text(f"Johnny, what can you make out of this? {md.emoji('airplane')}"),
         Divider(),
         Actions()
         .add_elements(
@@ -162,12 +162,12 @@ painless as possible.
             .set_label(f"{md.emoji('tophat')} Hat")
             .set_value("hat-button")
             .set_action_id("hat_button_pressed")
-            .primary(),
+            .set_style("primary"), # colors a button green
             Button()
             .set_label(f"{md.emoji('gem')} Broach")
             .set_value("broach-button")
             .set_action_id("broach_button_pressed")
-            .danger(),
+            .danger(), # colors a button red; alternative to using set_style("danger")
             Button()
             .set_label(f"{md.emoji('lizard')} Pterodactyl")
             .set_value("pterodactyl-button")
