@@ -138,7 +138,12 @@ painless as possible.
      .set_channel("C12345") # ID of the channel for posting or user ID for DM
     )
     ```
+
+  ###### *Note that the `()` wrapping the code constructing the instance of the `Message` object is required by PyCharm and other IDEs to ensure proper indentation for method chaining and serves no functional purpose in **PyBlock Builder**!
+
+    Output:
     ![message_screenshot_1.png](docs/resources/images/message_screenshot_1.png)
+
     A more complex message may, of course, include—you guessed it!—`blocks`. 
     ```python
     from pyblock_builder.surfaces import Message
@@ -173,7 +178,8 @@ painless as possible.
      .set_channel("C12345") # ID of the channel for posting or user ID for DM
     )
     ```
-  ![message_screenshot_1.png](docs/resources/images/message_screenshot_2.png)
+    Output:
+    ![message_screenshot_1.png](docs/resources/images/message_screenshot_2.png)
 - #### Posting and Scheduling Messages
 - #### Updating and Deleting Messages
 
