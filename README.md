@@ -109,7 +109,7 @@ from pyblock_builder.elements import Button
 For **PyBlock Builder's** `mrkdwn` helper functions, the best practice is to import the module using the alias `md` to 
 avoid any potential conflict or confusion with similarly named functions or variables.
 ```python
-# Allow for formatting syntax such as md.bold(), md.emoji(), etc.
+# Allow for formatting using syntax such as md.bold(), md.emoji(), etc.
 from pyblock_builder import mrkdwn as md
 ```
 However, if this is not to your liking and you are confident that no such conflicts or confusion will arise, you may 
