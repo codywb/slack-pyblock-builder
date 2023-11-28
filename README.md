@@ -8,7 +8,7 @@
 
 ## 💡 Features
 
-- Optimized for use with Slack's Bolt for Python framework
+- Optimized for use with Slack's Bolt for Python SDK
 - Declarative syntax with method chaining
 - IDE-friendly with descriptive docstrings describing each component and its methods
 - Helper module with functions to simplify formatting text in Slack's `mrkdwn` standard 
@@ -27,16 +27,15 @@
 ```python 
 pip install pyblock-builder
 ```
-
+**Note:** Depending on your individual environment settings, macOS/Linux users may need to use `pip3` instead of `pip`.
 ## :two: Usage
 
 **PyBlock Builder** is made up of the following components:
 
-`surfaces` - A collection of classes representing app surfaces on the Slack platform.
+`surfaces` - A collection of classes representing app surfaces on the Slack platform, such as `Message` and `AppHome`.
 
 `blocks` - A collection of classes representing blocks—visual components that can be arranged to
-create app layouts—from Slack's Block Kit UI framework. These can be added to your app's `surfaces` such as `AppHome` and
-`Modal`.
+create app layouts—from Slack's Block Kit UI framework. These can be added to your app's `surfaces` and include `Section` and `Input`.
 
 `elements` - A collection of classes representing block elements—the UI elements such as `Button` and `SelectMenu`
 used to capture user interaction. These can be added to your app's `blocks`.
@@ -49,7 +48,7 @@ interactive features within certain `blocks` and block `elements`. These include
 
 ### Compatibility
 
-**PyBlock Builder** features support for the following parts of the Slack API and Block Kit framework:
+The current version of **PyBlock Builder** features support for the following parts of the Slack API and Block Kit framework:
 
 
 |                                 |     Supported?      | Corresponding PyBlock Builder Class                                                                                                                                                                                 |
@@ -99,148 +98,82 @@ interactive features within certain `blocks` and block `elements`. These include
 
 ### Importing
 
-Import the required components for your application using absolute imports:
+The best practice for `surfaces`, `blocks`, `elements`, and `objects` is to import only the components required using absolute imports. 
+
+For example, a simple chatbot app may begin with something like this:
 ```python
-from pyblock_builder.surfaces import Modal
-from pyblock_builder.blocks import Actions
-from pyblock_builder.elements import MultiStaticSelect
-from pyblock_builder.objects import Option
+from pyblock_builder.surfaces import Message
+from pyblock_builder.blocks import Section, Actions
 from pyblock_builder.elements import Button
+```
+For **PyBlock Builder's** `mrkdwn` helper functions, the best practice is to import the module using the alias `md` to 
+avoid any potential conflict or confusion with similarly named functions or variables.
+```python
+# Allow for formatting syntax such as md.bold(), md.emoji(), etc.
+from pyblock_builder import mrkdwn as md
+```
+However, if this is not to your liking and you are confident that no such conflicts or confusion will arise, you may 
+alternatively import the module in such a way as to enable access to each helper function directly:
+```python
+# Enable bold(), blockquote(), inline_code(), and link() to be called directly. 
+# Recommended when you know you will only need a few specific funtions
+from pyblock_builder.mrkdwn import bold, blockquote, inline_code, link
+
+# Enable all functions in the module to be called directly
 from pyblock_builder.mrkdwn import *
 ```
-The following code demonstrates how to display a simple `Actions` block with a `StaticSelectMenu` and `Button` element 
-on an `AppHome` surface using the [Slack Bolt framework for Python](https://slack.dev/bolt-python/concepts). Note that the `()`wrapping the code used to 
-construct the instance of the `Modal()` class is required by most IDEs (including Pycharm) to ensure proper indentation
-for method chaining and serves no other functional purpose in **Pyblock Builder.**
-```python
-@app.action("button_0")
-def open_modal(ack, body, client):
-    ack()
-    modal = (Modal()
-            .set_title("Sample Modal")
-            .add_blocks(
-                Actions()
-                .set_block_id("actions1")
-                .add_elements(
-                    StaticSelectMenu()
-                    .set_action_id("actions2")
-                    .set_placeholder_text("Which witch is the witchiest witch?")
-                    .set_options(
-                        Option()
-                        .set_text("Matilda")
-                        .set_value("matilda"),
-                        Option()
-                        .set_text("Glinda")
-                        .set_value("glinda"),
-                        Option()
-                        .set_text("Granny Weathermax")
-                        .set_value("grannyWeathermax"),
-                        Option()
-                        .set_text("Hermoine")
-                        .set_value("hermoine")
-                    ),
-                    Button()
-                    .set_label("Cancel")
-                    .set_value("cancel")
-                    .set_action_id("button_1")
-                )
-            ))
+### Working with Messages
 
-    client.views_open(
-        trigger_id=body["trigger_id"],
-        view_id=body["view"]["id"],
-        hash = body["view"]["hash"],
-        view=modal.view
+Messages are the core of the Slack platform and **PyBlock Builder** is optimized for use with Slack's 
+[Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started) to make working with them as efficient and 
+painless as possible. 
+
+- #### Composing a Message
+    Messages in **PyBlock Builder** are naturally constructed using the `Message` class from the `surfaces` module. The following is an example of a barebones message:
+    ```python
+    from pyblock_builder.surfaces import Message
+  
+    (Message()
+     .set_text("Hello world!") # main body text of the message
+     .set_channel("C12345") # ID of the channel for posting or user ID for DM
     )
-```
-Alternatively—and for more dynamic, real world scenarios—options for your menu can also be set from a data source such 
-as a dictionary using a single line of code by passing in a list comprehension prefixed with Python's `*` operator:
-```python
-@app.action("button_0")
-def open_modal(ack, body, client):
-    ack()
-    options = {
-        'Matilda': 'matilda',
-        'Glinda': 'glinda',
-        'Granny Weathermax': 'grannyWeathermax',
-        'Hermoine': 'hermoine'
-    }
-    modal = (Modal()
-            .set_title("Sample Modal")
-            .add_blocks(
-                Actions()
-                .set_block_id("actions1")
-                .add_elements(
-                    StaticSelectMenu()
-                    .set_action_id("actions2")
-                    .set_placeholder_text("Which witch is the witchiest witch?")
-                    .set_options(
-                        *[Option().set_text(text).set_value(value) for text, value in options.items()]
-                    ),
-                    Button()
-                    .set_label("Cancel")
-                    .set_value("cancel")
-                    .set_action_id("button_1")
-                )
-            ))
-
-    client.views_open(
-        trigger_id=body["trigger_id"],
-        view_id=body["view"]["id"],
-        hash = body["view"]["hash"],
-        view=modal.view
-    )
-```
-Both of the examples above will produce the following output:
-
-![modal_screenshot2.png](docs/images/modal_screenshot2.png)
-The following code will build an `AppHome` with `Section`, `Divider`, and `Actions` blocks and `StaticSelectMenu` and `Button` elements.
-
-```python
-# define a dictionary to store text and values for menu options
-options = {
-        f"{emoji('heart_eyes')} Love it!": "love",
-        f"{emoji('thumbsup')} Nice!": "nice",
-        f"{emoji('neutral_face')} It's ok": "ok",
-        f"{emoji('sleepy')} Meh": "meh"
-    }
-# create a variable to store instance of AppHome and build out UI using declarative syntax and method chaining
-home = AppHome().add_blocks(
-    Section()
-    .set_text(f"Howdy, partner! {emoji('face_with_cowboy_hat')} "
-              f"This is what it looks like to build an App Home surface using {bold('PyBlock Builder')}.\n\n"),
-    Divider(),
-    Section()
-    .set_text(f"What do you think? {emoji('smiling_face_with_3_hearts')}")
-    .add_accessory(
-        StaticSelectMenu()
-        .set_placeholder_text("Be honest!")
-        .set_action_id("menu_opened")
-        .set_options(
-            # pass in multiple options at once using a list comprehension
-            *[Option().set_text(text).set_value(value) for text, value in options.items()]
+    ```
+    ![message_screenshot_1.png](docs/resources/images/message_screenshot_1.png)
+    A more complex message may, of course, include—you guessed it!—`blocks`. 
+    ```python
+    from pyblock_builder.surfaces import Message
+    from pyblock_builder.blocks import Section, Divider, Actions
+    from pyblock_builder.elements import Button
+    from pyblock_builder import mrkdwn as md
+    
+    (Message()
+     .add_blocks(
+        Section()
+        .set_text(f"Johnny, what can you make of this? {md.emoji('airplane')}"),
+        Divider(),
+        Actions()
+        .add_elements(
+            Button()
+            .set_label(f"{md.emoji('tophat')} Hat")
+            .set_value("hat-button")
+            .set_action_id("hat_button_pressed")
+            .primary(),
+            Button()
+            .set_label(f"{md.emoji('gem')} Broach")
+            .set_value("broach-button")
+            .set_action_id("broach_button_pressed")
+            .danger(),
+            Button()
+            .set_label(f"{md.emoji('lizard')} Pterodactyl")
+            .set_value("pterodactyl-button")
+            .set_action_id("pterodactyl_button_pressed"),
         )
-    ),
-    Divider(),
-    Section()
-    .set_text(f"With {bold('PyBlock Builder')} it's easy to create buttons, too!"),
-    Actions()
-    .add_elements(
-        Button()
-        .set_label(f"{emoji('ok_woman')} Approve")
-        .set_action_id("approved")
-        .set_value("button_approved")
-        .set_style("primary"),
-        Button()
-        .set_label(f"{emoji('no_good')} Deny")
-        .set_action_id("denied")
-        .set_value("button_denied")
-        .set_style("danger"),
-        Button()
-        .set_label(f"{emoji('no_entry')} Cancel")
-        .set_action_id("canceled")
-        .set_value("button_canceled"),
+     )
+     .set_text("Johnny, what can you make of this?") # when blocks are used this becomes a fallback string for display in notifcations
+     .set_channel("C12345") # ID of the channel for posting or user ID for DM
     )
-)
-```
-![app_home_screenshot.png](docs/images/app_home_screenshot.png)
+    ```
+  ![message_screenshot_1.png](docs/resources/images/message_screenshot_2.png)
+- #### Posting and Scheduling Messages
+- #### Updating and Deleting Messages
+
