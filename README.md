@@ -8,7 +8,7 @@
 
 ## 💡 Features
 
-- Optimized for use with Slack's Bolt for Python SDK
+- Optimized for use with Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started)
 - Declarative syntax with method chaining
 - IDE-friendly with descriptive docstrings describing each component and its methods
 - Helper module with functions to simplify formatting text in Slack's `mrkdwn` standard 
