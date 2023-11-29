@@ -140,12 +140,12 @@ painless as possible.
     )
     ```
 
-  ###### *Note that the `()` wrapping the code constructing the instance of the `Message` object is required by PyCharm and other IDEs to ensure proper indentation for method chaining and serves no functional purpose in **PyBlock Builder**!
+  ###### *Note that the `()` wrapping the code constructing the instance of the `Message` object is required by PyCharm and other IDEs to ensure proper indentation for method chaining and serves no functional purpose in **PyBlock Builder**.
 
     Output:
     ![message_screenshot_1.png](docs/resources/images/message_screenshot_1.png)
 
-    A more complex message may, of course, include—you guessed it!—`blocks`. 
+    A more complex message may, of course, include—you guessed it!—blocks!`. 
     ```python
     from pyblock_builder.surfaces import Message
     from pyblock_builder.blocks import Section, Divider, Actions
