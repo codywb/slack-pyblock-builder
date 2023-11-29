@@ -231,7 +231,8 @@ class Message:
     def post(self, slack_client):
         """
         Uses the attributes set on the class to generate a message payload and passes it to either the chat.postMessage
-        or chat.postEphemeral Web API methods of the Slack Bolt for Python client depending on the value of is_ephemeral.
+        or chat.postEphemeral Web API methods of the Slack Bolt for Python client depending on the value of is_ephemeral
+        OR to the chat.scheduleMessage Web API method if post_at is set.
         :param slack_client: an instance of the Slack Bolt for Python's app.client
         :return: Slack API response
         """

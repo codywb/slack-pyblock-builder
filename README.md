@@ -182,5 +182,64 @@ painless as possible.
     Output:
     ![message_screenshot_1.png](docs/resources/images/message_screenshot_2.png)
 - #### Posting and Scheduling Messages
+  
+  While the above examples show how simple and intuitive it is to construct a message using **PyBlock Builder**,
+  `Message` objects are also equipped with some handy features that allow for easier posting and scheduling when 
+  using Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started). For the purposes of 
+  demonstrating how to use features of **PyBlock Builder** which are optimized for use with the [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started), 
+  I will assume you are already somewhat familiar with how the SDK works. If you are not, please check out the great documentation
+  provided by Slack from one of the links above.
+  ```python
+  # Simple demonstration of how to post a message with Slack's Bolt for Python SDK and PyBlock Builder
+  import os
+  from slack_bolt import App
+  from slack_bolt.adapter.socket_mode import SocketModeHandler
+  from pyblock_builder.surfaces import Message
+
+  # Initializes your app with your bot token and socket mode handler
+  app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
+
+  (Message()
+    .set_text("I'm posting this message using PyBlock Builder!") # main body text of the message
+    .set_channel("C12345") # ID of the channel for posting or user ID for DM
+    .post(app.client)
+  )
+  
+  # Start your app
+  if __name__ == "__main__":
+    SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+  ```
+  As demonstrated above, posting a messsage with **PyBlock Builder** is as simple as passing the `WebClient` provided to
+  your Bolt app as `app.client` to the `post()` method of the `Message` object. **PyBlock Builder** takes care of the 
+  rest for you! Scheduling a message to be sent at a certain time can be similarly accomplished as shown below:
+  ```python
+  # Simple demonstration of how to schedule a message with Slack's Bolt for Python SDK and PyBlock Builder
+  import os
+  from datetime import datetime
+  from slack_bolt import App
+  from slack_bolt.adapter.socket_mode import SocketModeHandler
+  from pyblock_builder.surfaces import Message
+
+  # Initializes your app with your bot token and socket mode handler
+  app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
+
+  when_to_post = datetime(2023, 12, 25, 9, 00)
+  
+  (Message()
+    .set_text("This is a scheduled message using PyBlock Builder!") # main body text of the message
+    .set_channel("C12345") # ID of the channel for posting or user ID for DM
+    .post_at(when_to_post)
+    .post(app.client)
+  )
+  
+  # Start your app
+  if __name__ == "__main__":
+    SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+  ```
+  That's it! Scheduling messages is as easy as using the `post_at()` method to set the date and time you wish your app to
+  send the message at. For even more convenience, `post_at()` accepts values in the form of a UNIX timestamp as a string
+  or as a Python `datetime` object as shown above.
 - #### Updating and Deleting Messages
+  Posting and scheduling messages is great, but what if you want to want to update or delete a message that your app has
+  already sent? Fear not! **PyBlock Builder** has you covered!
 
