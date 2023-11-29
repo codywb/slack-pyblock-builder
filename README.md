@@ -135,15 +135,12 @@ painless as possible.
     from pyblock_builder.surfaces import Message
   
     (Message()
-     .set_text("Hello world!") # main body text of the message
+     .set_text("I'm posting this message with PyBlock Builder!") # main body text of the message
      .set_channel("C12345") # ID of the channel for posting or user ID for DM
     )
     ```
 
   ###### *Note that the `()` wrapping the code constructing the instance of the `Message` object is required by PyCharm and other IDEs to ensure proper indentation for method chaining and serves no functional purpose in **PyBlock Builder**.
-
-    Output:
-    ![message_screenshot_1.png](docs/resources/images/message_screenshot_1.png)
 
     A more complex message may, of course, include—you guessed it!—blocks!`. 
     ```python
@@ -179,8 +176,6 @@ painless as possible.
      .set_channel("C12345") # ID of the channel for posting or user ID for DM
     )
     ```
-    Output:
-    ![message_screenshot_1.png](docs/resources/images/message_screenshot_2.png)
 - #### Posting and Scheduling Messages
   
   While the above examples show how simple and intuitive it is to construct a message using **PyBlock Builder**,
@@ -209,9 +204,11 @@ painless as possible.
   if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
   ```
-  As demonstrated above, posting a messsage with **PyBlock Builder** is as simple as passing the `WebClient` provided to
+  Output:
+![message_screenshot_1](docs/resources/images/message_screenshot_1.png)
+  As demonstrated above, posting our first messsage example from above with **PyBlock Builder** is as simple as passing the `WebClient` provided to
   your Bolt app as `app.client` to the `post()` method of the `Message` object. **PyBlock Builder** takes care of the 
-  rest for you! Scheduling a message to be sent at a certain time can be similarly accomplished as shown below:
+  rest for you! Now, let's try scheduling our more complex message example to be sent at a certain time:
   ```python
   # Simple demonstration of how to schedule a message with Slack's Bolt for Python SDK and PyBlock Builder
   import os
@@ -223,22 +220,52 @@ painless as possible.
   # Initializes your app with your bot token and socket mode handler
   app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 
+  # Create a datetime object representing the date and time for posting
   when_to_post = datetime(2023, 12, 25, 9, 00)
   
+  from pyblock_builder.surfaces import Message
+  from pyblock_builder.blocks import Section, Divider, Actions
+  from pyblock_builder.elements import Button
+  from pyblock_builder import mrkdwn as md
+  
   (Message()
-    .set_text("This is a scheduled message using PyBlock Builder!") # main body text of the message
-    .set_channel("C12345") # ID of the channel for posting or user ID for DM
-    .post_at(when_to_post)
-    .post(app.client)
+   .add_blocks(
+      Section()
+      .set_text(f"Johnny, what can you make out of this? {md.emoji('airplane')}"),
+      Divider(),
+      Actions()
+      .add_elements(
+          Button()
+          .set_label(f"{md.emoji('tophat')} Hat")
+          .set_value("hat-button")
+          .set_action_id("hat_button_pressed")
+          .set_style("primary"), # colors a button green
+          Button()
+          .set_label(f"{md.emoji('gem')} Broach")
+          .set_value("broach-button")
+          .set_action_id("broach_button_pressed")
+          .danger(), # colors a button red; alternative to using set_style("danger")
+          Button()
+          .set_label(f"{md.emoji('lizard')} Pterodactyl")
+          .set_value("pterodactyl-button")
+          .set_action_id("pterodactyl_button_pressed"),
+      )
+   )
+   .set_text("Johnny, what can you make of this?") # when blocks are used this becomes a fallback string for display in notifcations
+   .set_channel("C12345") # ID of the channel for posting or user ID for DM
+   .post_at(when_to_post)
+   .post(app.client)
   )
   
   # Start your app
   if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
   ```
+  Output:
+![message_screenshot_2](docs/resources/images/message_screenshot_2.png)
   That's it! Scheduling messages is as easy as using the `post_at()` method to set the date and time you wish your app to
-  send the message at. For even more convenience, `post_at()` accepts values in the form of a UNIX timestamp as a string
-  or as a Python `datetime` object as shown above.
+  send the message before calling the `post()` method. For even more convenience, `post_at()` accepts values in the form 
+  of a UNIX timestamp as a string or as a Python `datetime` object as shown above.
 - #### Updating and Deleting Messages
   Posting and scheduling messages is great, but what if you want to want to update or delete a message that your app has
   already sent? Fear not! **PyBlock Builder** has you covered!
