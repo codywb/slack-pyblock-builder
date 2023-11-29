@@ -410,6 +410,9 @@ tabs a piece of cake.
 
   ```python
   # Simple example of a Home tab view with a message composer UI
+  import os
+  from slack_bolt import App
+  from slack_bolt.adapter.socket_mode import SocketModeHandler
   from pyblock_builder.surfaces import AppHome
   from pyblock_builder.blocks import Actions, Divider, Input
   from pyblock_builder.elements import Button, PlainTextInput
