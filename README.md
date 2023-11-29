@@ -266,6 +266,7 @@ painless as possible.
   That's it! Scheduling messages is as easy as using the `post_at()` method to set the date and time you wish your app to
   send the message before calling the `post()` method. For even more convenience, `post_at()` accepts values in the form 
   of a UNIX timestamp as a string or as a Python `datetime` object as shown above.
+  ###### *Note that it is still possible to use **PyBlock Builder** without taking advantage of the methods optimized for use with Bolt for Python SDK by simply assigning an instance of `Message()` to a variable and passing its view payload using the `Message.view` attribute.
 - #### Updating and Deleting Messages
   Posting and scheduling messages is great, but what if you want to want to update or delete a message that your app has
   already sent? Fear not! **PyBlock Builder** has you covered!
