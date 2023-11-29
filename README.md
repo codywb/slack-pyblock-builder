@@ -221,7 +221,7 @@ painless as possible.
   app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 
   # Create a datetime object representing the date and time for posting
-  when_to_post = datetime(2023, 12, 25, 9, 00)
+  when_to_post = datetime(2023, 11, 29, 15, 59)
   
   from pyblock_builder.surfaces import Message
   from pyblock_builder.blocks import Section, Divider, Actions
