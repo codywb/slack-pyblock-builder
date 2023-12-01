@@ -494,7 +494,7 @@ Modal views as simple as can be.
   ```python
   # Listen for triggers invoking the action assigned to the "Save Draft" button using the set_action_id() method above
   @app.action("save_draft")
-  def save_draft(ack, body, client):
+  def save_draft_view(ack, body, client):
     ack()
     (Modal()
      .set_title("Save Draft")
@@ -547,7 +547,7 @@ Modal views as simple as can be.
     ```python
     # Listen for triggers invoking the "save_draft" action set using set_action_id() above
     @app.action("save_draft")
-    def save_draft(ack, body, client):
+    def save_draft_view(ack, body, client):
       ack()
       (Modal()
        .set_title("Save Draft")
@@ -574,7 +574,7 @@ Modal views as simple as can be.
 
   ```python
   @app.action("abort_save_draft")
-  def handle_test_button_submission(ack, body, client):
+  def abort_save_draft(ack, body, client):
       ack()
       (Modal()
        .set_title("Save Draft")
