@@ -5,7 +5,7 @@ framework. It was designed to make it easier for anyone—from hobbyists to prof
 with fewer lines of code. 
 
 For the purposes of demonstrating how to use the features of **PyBlock Builder**, this documentation assumes at least 
-basic familiarity with the Slack platform, its [Block Kit UI](https://api.slack.com/block-kit) framework, and the [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started). 
+basic familiarity with the Slack platform, the Slack API, the [Block Kit UI](https://api.slack.com/block-kit) framework, and the [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started). 
 If you are new to any or all of these, please check out the great documentation provided by Slack from the link above.
 
 ---
