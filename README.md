@@ -1,6 +1,12 @@
 ![logo-full](docs/resources/images/logo-full.png)
 ---
-**PyBlock Builder** is a lightweight library written in Python for constructing UI with Slack's [Block Kit UI](https://api.slack.com/block-kit) framework. It was designed to make it easier for anyone—from hobbyists to professional devs—to create Slack apps faster with fewer lines of code. 
+**PyBlock Builder** is a lightweight library written in Python for constructing UI with Slack's [Block Kit UI](https://api.slack.com/block-kit) 
+framework. It was designed to make it easier for anyone—from hobbyists to professional devs—to create Slack apps faster 
+with fewer lines of code. 
+
+For the purposes of demonstrating how to use the features of **PyBlock Builder**, this documentation assumes at least 
+basic familiarity with the Slack platform, its [Block Kit UI](https://api.slack.com/block-kit) framework, and the [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started). 
+If you are new to any or all of these, please check out the great documentation provided by Slack from the link above.
 
 ---
 ![img](https://img.shields.io/pypi/v/pyblock-builder.svg)
@@ -181,10 +187,7 @@ painless as possible.
   
   While the above examples show how simple and intuitive it is to construct a message using **PyBlock Builder**,
   `Message` objects are also equipped with some handy features that allow for easier posting and scheduling when 
-  using Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started). For the purposes of 
-  demonstrating how to use features of **PyBlock Builder** which are optimized for use with the [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started), 
-  I will assume you are already somewhat familiar with how the SDK works. If you are not, please check out the great documentation
-  provided by Slack from one of the links above.
+  using Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started).
   ```python
   # Simple demonstration of how to post a message with Slack's Bolt for Python SDK and PyBlock Builder
   import os
@@ -402,12 +405,8 @@ tabs a piece of cake.
   
   Great! So, composing a Home tabb view using **PyBlock Builder** is just as easy as composing a message! But how do I 
   actually make them show, you ask? Just like `Message` objects, `AppHome` objects are also equipped with a method that 
-  allows for easier publishing and updating when using Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started). 
-  For the purposes of demonstrating how to use features of **PyBlock Builder** which are optimized for use with the 
-  [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started), I will assume you are already somewhat 
-  familiar with how the SDK works. If you are not, please check out the great documentation provided by Slack from one 
-  of the links above.
-
+  allows for easier publishing and updating when using Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started).
+  
   ```python
   # Simple example of a Home tab view with a message composer UI
   import os
@@ -486,8 +485,106 @@ Modals are focused surfaces that allow you to collect user data and display dyna
 Home tab views, **PyBlock Builder** is optimized for use with Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started) to make working with
 Modal views as simple as can be.
 
-- #### Composing a Modal View
+- #### Composing and Opening a Modal View
 
   Modal views in **PyBlock Builder** are naturally constructed using the `Modal` class from the `surfaces` module.
-  The following is an example of how to compose a simple Modal view:
+  The following example builds off of our simple message composer UI above and shows how to compose a simple Modal view 
+  that opens when you click the "Save Draft" button:
   
+  ```python
+  # Listen for triggers invoking the action assigned to the "Save Draft" button using the set_action_id() method above
+  @app.action("save_draft")
+  def save_draft(ack, body, client):
+    ack()
+    (Modal()
+     .set_title("Save Draft")
+     .set_callback_id("save_modal")
+     .set_submit_label("Save")
+     .set_close_label("Discard")
+     .add_blocks(
+        Section()
+        .set_text("Save a draft?")
+     ).open_view(body, client))
+  ```
+  Output:
+  ![modal_open](docs/resources/images/modal_open_1.png)
+  
+  Easy, right? Simply construct modals in the same manner as with messages and Home tab views and call the `Modal` 
+  object's `open_view()` method, pass in the API response `body` and the Slack app `client` and leave the rest to 
+  **PyBlock Builder**!
+
+  - #### Updating and Pushing Modal Views
+
+    So, what about updating an open modal view? Well, let's take the example from above and assume we'd like to let the
+    user know their draft was saved successfully. To do this, we simple need to listen for a view submission from when the
+    user clicks the "Save" button and respond accordingly:
+
+    ```python
+    # Listen for view submission using callback_id set above from Save Draft modal and handle it
+    @app.view("save_modal")
+    def handle_save_submission(ack):
+      (Modal()
+       .set_title("Save Draft")
+       .set_callback_id("save_modal_2")
+       .set_submit_label("OK")
+       .add_blocks(
+          Section()
+          .set_text("You're draft has been saved.")
+       ).update_view_from_submission(ack)
+      )
+    ```
+    Output:
+    ![modal_submission](docs/resources/images/modal_submission.png)
+  
+    That's it! Just pass an instance of `ack`to the `Modal` object's `update_view_from_submission()` method and
+    **PyBlock Builder** will update the content of the extisting view. Alternatively, if you'd like to push a new view on
+    top of the existing view (Slack allows for an additional two views to be pushed on top of the original view), simply 
+    pass the instance of `ack` to the `push_view_from_submission()` method instead. It should be noted, however, that this
+    method only works for updating and pushing views on submission (i.e., the clicking of a modals' "submit" button). 
+    Updating or pushing views in response to other actions require the use of the `Modal` object's `update_view()` and 
+    `push_view()` methods. For example, if instead of clicking the "Save" button in our example above we clicked a new 
+    "Abort!" button, the view could be opened using the code below:
+    ```python
+    # Listen for triggers invoking the "save_draft" action set using set_action_id() above
+    @app.action("save_draft")
+    def save_draft(ack, body, client):
+      ack()
+      (Modal()
+       .set_title("Save Draft")
+       .set_callback_id("save_modal")
+       .set_submit_label("Save")
+       .set_close_label("Cancel")
+       .add_blocks(
+          Section()
+          .set_text("Save a draft?")
+          .add_accessory(
+              Button()
+              .set_label("Abort!")
+              .set_value("abort-button")
+              .set_action_id("abort_save_draft")
+              .danger()
+          )
+       ).open_view(body, client))
+    ```
+    Output:
+  ![modal_open_2](docs/resources/images/modal_open_2.png)
+  
+  And subsequently updated and/or pushed by passing the API response `body` and the Slack app `client` to the `Modal` object's `update_view()`
+  or `push_view()` methods accordingly:
+
+  ```python
+  @app.action("abort_save_draft")
+  def handle_test_button_submission(ack, body, client):
+      ack()
+      (Modal()
+       .set_title("Save Draft")
+       .set_callback_id("save_modal_2")
+       .set_submit_label("OK")
+       .add_blocks(
+          Section()
+          .set_text("Abort successful!")
+      ).update_view(body, client) # or .push_view(body, client) to push a new view on to the stack
+    )
+  ```
+  Output:
+![modal_action](docs/resources/images/modal_action.png)
