@@ -149,7 +149,7 @@ painless as possible.
 
   ###### *Note that the `()` wrapping the code constructing the instance of the `Message` object is required by PyCharm and other IDEs to ensure proper indentation for method chaining and serves no functional purpose in **PyBlock Builder**.
 
-    A more complex message may, of course, include—you guessed it!—blocks!. 
+    A more complex message may, of course, include—you guessed it!—blocks!
     ```python
     from pyblock_builder.surfaces import Message
     from pyblock_builder.blocks import Section, Divider, Actions
@@ -220,17 +220,15 @@ painless as possible.
   from slack_bolt import App
   from slack_bolt.adapter.socket_mode import SocketModeHandler
   from pyblock_builder.surfaces import Message
+  from pyblock_builder.blocks import Section, Divider, Actions
+  from pyblock_builder.elements import Button
+  from pyblock_builder import mrkdwn as md
 
   # Initializes your app with your bot token and socket mode handler
   app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 
   # Create a datetime object representing the date and time for posting
   when_to_post = datetime(2023, 11, 29, 15, 59)
-  
-  from pyblock_builder.surfaces import Message
-  from pyblock_builder.blocks import Section, Divider, Actions
-  from pyblock_builder.elements import Button
-  from pyblock_builder import mrkdwn as md
   
   (Message()
    .add_blocks(
