@@ -493,16 +493,16 @@ Modal views as simple as can be.
   # Listen for triggers invoking the action assigned to the "Save Draft" button using the set_action_id() method above
   @app.action("save_draft")
   def save_draft_view(ack, body, client):
-    ack()
-    (Modal()
-     .set_title("Save Draft")
-     .set_callback_id("save_modal")
-     .set_submit_label("Save")
-     .set_close_label("Discard")
-     .add_blocks(
-        Section()
-        .set_text("Save a draft?")
-     ).open_view(body, client))
+      ack()
+      (Modal()
+       .set_title("Save Draft")
+       .set_callback_id("save_modal")
+       .set_submit_label("Save")
+       .set_close_label("Discard")
+       .add_blocks(
+          Section()
+          .set_text("Save a draft?")
+       ).open_view(body, client))
   ```
   Output:
   ![modal_open](docs/resources/images/modal_open_1.png)
@@ -521,15 +521,16 @@ Modal views as simple as can be.
     # Listen for view submission using callback_id set above from Save Draft modal and handle it
     @app.view("save_modal")
     def handle_save_submission(ack):
-      (Modal()
-       .set_title("Save Draft")
-       .set_callback_id("save_modal_2")
-       .set_submit_label("OK")
-       .add_blocks(
-          Section()
-          .set_text("You're draft has been saved.")
-       ).update_view_from_submission(ack)
-      )
+        ack()
+        (Modal()
+         .set_title("Save Draft")
+         .set_callback_id("save_modal_2")
+         .set_submit_label("OK")
+         .add_blocks(
+            Section()
+            .set_text("You're draft has been saved.")
+         ).update_view_from_submission(ack)
+        )
     ```
     Output:
     ![modal_submission](docs/resources/images/modal_submission.png)
@@ -538,31 +539,31 @@ Modal views as simple as can be.
     **PyBlock Builder** will update the content of the extisting view. Alternatively, if you'd like to push a new view on
     top of the existing view (Slack allows for an additional two views to be pushed on top of the original view), simply 
     pass the instance of `ack` to the `push_view_from_submission()` method instead. It should be noted, however, that this
-    method only works for updating and pushing views on submission (i.e., the clicking of a modals' "submit" button). 
+    method only works for updating and pushing views on submission (i.e., the clicking of a modal's "submit" button). 
     Updating or pushing views in response to other actions require the use of the `Modal` object's `update_view()` and 
     `push_view()` methods. For example, if instead of clicking the "Save" button in our example above we clicked a new 
-    "Abort!" button, the view could be opened using the code below:
+    "Abort!" button, the initial view could be opened using the code below:
     ```python
     # Listen for triggers invoking the "save_draft" action set using set_action_id() above
     @app.action("save_draft")
     def save_draft_view(ack, body, client):
-      ack()
-      (Modal()
-       .set_title("Save Draft")
-       .set_callback_id("save_modal")
-       .set_submit_label("Save")
-       .set_close_label("Cancel")
-       .add_blocks(
-          Section()
-          .set_text("Save a draft?")
-          .add_accessory(
-              Button()
-              .set_label("Abort!")
-              .set_value("abort-button")
-              .set_action_id("abort_save_draft")
-              .danger()
-          )
-       ).open_view(body, client))
+        ack()
+        (Modal()
+         .set_title("Save Draft")
+         .set_callback_id("save_modal")
+         .set_submit_label("Save")
+         .set_close_label("Cancel")
+         .add_blocks(
+            Section()
+            .set_text("Save a draft?")
+            .add_accessory(
+                Button()
+                .set_label("Abort!")
+                .set_value("abort-button")
+                .set_action_id("abort_save_draft")
+                .danger()
+            )
+         ).open_view(body, client))
     ```
     Output:
   ![modal_open_2](docs/resources/images/modal_open_2.png)
