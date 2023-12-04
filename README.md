@@ -288,7 +288,7 @@ painless as possible.
   # Post a message and catch the response from the Slack API to reference its ID for updating later
   response = (Message()
               .set_text("Hey, that's a nice message...")
-              .set_channel("C02AJ4HDTSA")
+              .set_channel("C12345")
               .post(app.client))
 
   update_message_ts = response['message']['ts'] # also accessible via response['ts']
@@ -308,7 +308,7 @@ painless as possible.
   update_message_ts = response['message']['ts'] # also accessible via response['ts']
   
   (Message()
-   .set_channel("C02AJ4HDTSA")
+   .set_channel("C12345")
    .set_ts(update_message_ts)
    .set_text("It'd be a shame if someone updated it!")
    .update(app.client))
@@ -328,7 +328,7 @@ painless as possible.
   delete_message_ts = response['message']['ts'] # also accessible via response['ts']
   
   (Message()
-   .set_channel("C02AJ4HDTSA")
+   .set_channel("C12345")
    .set_ts(delete_message_ts)
    .delete(app.client))
   
