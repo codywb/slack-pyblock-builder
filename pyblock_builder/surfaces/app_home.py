@@ -64,7 +64,7 @@ class AppHome:
         self.view["blocks"] = self.blocks
         return self
 
-    def publish_view_from_event(self, slack_client, payload, logger):
+    def publish_view(self, slack_client, payload, logger):
         """
         Uses the attributes set on the class to generate a view payload and passes it to the views.publish Web API
         methods of the Slack Bolt for Python client.
