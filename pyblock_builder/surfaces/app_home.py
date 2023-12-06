@@ -64,18 +64,22 @@ class AppHome:
         self.view["blocks"] = self.blocks
         return self
 
-    def publish_view(self, slack_client, event, logger):
+    def publish_view_from_event(self, slack_client, payload, logger):
         """
         Uses the attributes set on the class to generate a view payload and passes it to the views.publish Web API
         methods of the Slack Bolt for Python client.
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :param event: the event payload passed to the app from the Slack API
+        :param payload: the event or other API response payload passed to the app from the Slack API
         :param logger: instance of logger to correctly log API errors
         :return: nothing
         """
+        if payload["type"] == "app_home_opened":
+            user_id = payload["user"]
+        else:
+            user_id = payload["user"]["id"]
         try:
             slack_client.views_publish(
-                user_id=event["user"],
+                user_id=user_id,
                 view=self.view
             )
         except Exception as e:

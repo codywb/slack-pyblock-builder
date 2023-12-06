@@ -65,7 +65,7 @@ class Message:
     def add_blocks(self, *blocks) -> Self:
         """
        (Optional) Adds one or more layout blocks to the message.
-       :param blocks: A list of one or more Block objects, e.g. Actions, Sections, Inputs
+       :param blocks: One or more Block objects, e.g. Actions, Sections, Inputs
        :return: self
        """
         for block in blocks:
