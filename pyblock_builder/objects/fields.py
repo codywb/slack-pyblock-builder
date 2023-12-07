@@ -12,7 +12,7 @@ class Fields:
     Can be added to: Section
     """
     def __init__(self):
-        self._fields = []
+        self.fields = []
 
     def add_field(self, text: str, mrkdwn=True) -> Self:
         """
@@ -25,6 +25,6 @@ class Fields:
             text = Text("plain_text", text)
         else:
             text = Text("mrkdwn", text)
-        self._fields.append(text.json)
+        self.fields.append(text.json)
         return self
 
