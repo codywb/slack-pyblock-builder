@@ -474,7 +474,7 @@ tabs a piece of cake.
 ![app_home](docs/resources/images/app_home.png)
 
   Both publishing and updating views on App Home surfaces are done via the `publish_view()` method and require that the
-  the app `client`, the `event` payload, and the instance of the `logger` class declared as arguments in the 
+  the app `client`, the `event` or `blocks_action` payload, and the instance of the `logger` class declared as arguments in the 
   `home_tab_opened()` function be passed to the `publish_view()` method.
 
 ### Working with Modals
