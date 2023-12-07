@@ -8,17 +8,34 @@ class Text:
     """
     A Python class representing a Text object from the Slack BlockKit UI framework
     """
-    def __init__(self, text_type, text):
-        self._type = text_type
-        self._text = text
+    def __init__(self):
+        self._type = "plain_text"
+        self._text = ""
         self._emoji = True
         self._verbatim = False
         self.json = {
             "type": self._type,
             "text": self._text
         }
-        if self._type == "plain_text":
-            self.json["emoji"] = self._emoji
+
+    def as_mrkdwn(self) -> Self:
+        """
+        (Optional) Sets the formatting of the object to "mrkdwn". The object will be of type plain_text if unused.
+        :return: self
+        """
+        self._type = "mrkdwn"
+        self.json['type'] = self._type
+        return self
+
+    def set_text(self, text: str) -> Self:
+        """
+        (Required) Sets the text for the object. May include Slack standard text formatting markup when using as_mrkdwn().
+        :param text: String; must be between 1 and 3000 characters.
+        :return: self
+        """
+        self._text = text
+        self.json['text'] = self._text
+        return self
 
     def escape_emojis(self) -> Self:
         """

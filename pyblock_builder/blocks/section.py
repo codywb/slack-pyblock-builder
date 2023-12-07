@@ -40,9 +40,9 @@ class Section:
         :return: self
         """
         if not mrkdwn:
-            self._text = Text("plain_text", text)
+            self._text = Text().set_text(text)
         else:
-            self._text = Text("mrkdwn", text)
+            self._text = Text().set_text(text).as_mrkdwn()
         self.block["text"] = self._text.json
         return self
 
