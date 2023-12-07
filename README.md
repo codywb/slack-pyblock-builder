@@ -21,7 +21,7 @@ If you are new to any or all of these, please check out the great documentation 
 
 ## 🎯Benefits
 
-- Write more efficient, easier-to-understand code
+- Write more efficient, easier-to-understand code in less time
 
 ---
 
