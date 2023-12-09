@@ -64,7 +64,7 @@ class Video:
         :param descriptive_text: String
         :return: self
         """
-        self._description = Text("plain_text", descriptive_text)
+        self._description = Text().set_text(descriptive_text)
         self.block["description"] = self._description.json
         return self
 
@@ -94,7 +94,7 @@ class Video:
         :param title_text: String; must be less than 200 characters
         :return: self
         """
-        self._title = Text("plain_text", title_text)
+        self._title = Text().set_text(title_text)
         self.block["title"] = self._title.json
         return self
 

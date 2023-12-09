@@ -40,7 +40,7 @@ class Input:
         :param label_text: String; max 2,000 chars
         :return: self
         """
-        self._label = Text("plain_text", label_text)
+        self._label = Text().set_text(label_text)
         self.block["label"] = self._label.json
         return self
 
@@ -70,7 +70,7 @@ class Input:
         :param hint_text: String; max 2,000 chars
         :return: self
         """
-        self._hint = Text("plain_text", hint_text)
+        self._hint = Text().set_text(hint_text)
         self.block["hint"] = self._hint.json
         return self
 

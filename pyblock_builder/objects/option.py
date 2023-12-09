@@ -28,9 +28,9 @@ class Option:
         :return: self
         """
         if not mrkdwn:
-            self._text = Text("plain_text", text)
+            self._text = Text().set_text(text)
         else:
-            self._text = Text("mrkdwn", text)
+            self._text = Text().set_text(text).as_mrkdwn()
         self.json["text"] = self._text.json
         return self
 
@@ -60,6 +60,6 @@ class Option:
         :param descriptive_text: String; max 75 chars
         :return: self
         """
-        self._description = Text("plain_text", descriptive_text)
+        self._description = Text().set_text(descriptive_text)
         self.json["description"] = self._description.json
         return self

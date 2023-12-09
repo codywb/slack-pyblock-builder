@@ -30,7 +30,7 @@ class ConfirmationDialog:
         :param title_text: String; max 100 chars
         :return: self
         """
-        self._title = Text("plain_text", title_text)
+        self._title = Text().set_text(title_text)
         self.json["title"] = self._title.json
         return self
 
@@ -40,7 +40,7 @@ class ConfirmationDialog:
         :param text: String; max 300 chars
         :return: self
         """
-        self._text = Text("plain_text", text)
+        self._text = Text().set_text(text)
         self.json["text"]= self._text.json
         return self
 
@@ -50,7 +50,7 @@ class ConfirmationDialog:
         :param label_text: String; max 30 chars
         :return: self
         """
-        self._confirm_text = Text("plain_text", label_text)
+        self._confirm_text = Text().set_text(label_text)
         self.json["confirm"]= self._confirm_text.json
         return self
 
@@ -60,7 +60,7 @@ class ConfirmationDialog:
         :param label_text: String; max 30 chars
         :return: self
         """
-        self._deny_text = Text("plain_text", label_text)
+        self._deny_text = Text().set_text(label_text)
         self.json["deny"] = self._deny_text.json
         return self
 

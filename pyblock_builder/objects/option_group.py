@@ -24,7 +24,7 @@ class OptionGroup:
         :param label_text: String; max 75 chars
         :return: self
         """
-        self._label = Text("plain_text", label_text)
+        self._label = Text().set_text(label_text)
         self.json["label"] = self._label.json
         return self
 

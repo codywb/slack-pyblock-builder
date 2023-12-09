@@ -32,17 +32,26 @@ class Section:
         self.block["block_id"] = self._block_id
         return self
 
-    def set_text(self, text: str, mrkdwn=True) -> Self:
+    def set_text(self, text, mrkdwn=True) -> Self:
         """
         (Preferred) Sets the text for the block. Not required if a list of fields objects is provided.
-        :param text: String; max 3,000 chars
+        :param text: String or Text object; max 3,000 chars
         :param mrkdwn: Boolean; defaults to True
         :return: self
         """
         if not mrkdwn:
-            self._text = Text().set_text(text)
+            if not isinstance(text, str):
+                self._text = text
+            else:
+                self._text = Text().set_text(text)
         else:
-            self._text = Text().set_text(text).as_mrkdwn()
+            if not isinstance(text, str):
+                if text._type == "mrkdwn":
+                    self._text = text
+                else:
+                    self._text = text.as_mrkdwn()
+            else:
+                self._text = Text().set_text(text).as_mrkdwn()
         self.block["text"] = self._text.json
         return self
 
@@ -67,3 +76,11 @@ class Section:
         self.block["accessory"] = self._accessory.json
         return self
 
+from pprint import pprint
+pprint(Section()
+       .set_text(
+         Text()
+         .set_text("Hello")
+         .as_mrkdwn()
+       )
+       .block)

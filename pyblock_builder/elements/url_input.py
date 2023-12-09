@@ -60,7 +60,7 @@ class UrlInput:
         :param placeholder_text: String; max 150 chars
         :return: self
         """
-        self._placeholder = Text("plain_text", placeholder_text)
+        self._placeholder = Text().set_text(placeholder_text)
         self.json["placeholder"] = self._placeholder.json
         return self
 

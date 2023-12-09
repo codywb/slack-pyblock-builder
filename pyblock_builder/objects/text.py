@@ -30,7 +30,7 @@ class Text:
     def set_text(self, text: str) -> Self:
         """
         (Required) Sets the text for the object. May include Slack standard text formatting markup when using as_mrkdwn().
-        :param text: String; must be between 1 and 3000 characters.
+        :param text: String; must be between 1 and 3,000 characters.
         :return: self
         """
         self._text = text

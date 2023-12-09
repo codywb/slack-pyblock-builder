@@ -22,9 +22,9 @@ class Fields:
         :return: self
         """
         if not mrkdwn:
-            text = Text("plain_text", text)
+            text = Text().set_text(text)
         else:
-            text = Text("mrkdwn", text)
+            text = Text().set_text(text).as_mrkdwn()
         self.fields.append(text.json)
         return self
 

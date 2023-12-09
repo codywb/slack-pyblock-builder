@@ -58,7 +58,7 @@ class Image:
         :param title_text: String; max 2,000 chars
         :return: self
         """
-        self._title = Text("plain_text", title_text)
+        self._title = Text().set_text(title_text)
         self.block["title"] = self._title.json
         return self
 

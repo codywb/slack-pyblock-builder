@@ -36,6 +36,6 @@ class Header:
         :param text: String; max 150 chars
         :return: self
         """
-        self._text = Text("plain_text", text)
+        self._text = Text().set_text(text)
         self.block["text"] = self._text.json
         return self

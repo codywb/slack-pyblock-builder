@@ -44,7 +44,7 @@ class Button:
         :param label_text: String; max 75 chars, may truncate from 30 chars
         :return: self
         """
-        self._text = Text("plain_text", label_text)
+        self._text = Text().set_text(label_text)
         self.json["text"] = self._text.json
         return self
 
