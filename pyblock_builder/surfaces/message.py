@@ -276,3 +276,18 @@ class Message:
 
         result = slack_client.chat_update(**payload)
         return result
+
+    def get_list_of_scheduled_messges(self, slack_client, latest=None, oldest=None) -> list:
+        """
+        Fetches a list of all messages scheduled to be posted by the app.
+        :param slack_client: an instance of the Slack Bolt for Python's app.client
+        :param latest: (Optional) Ending date of range to look for scheduled messages as Unix timestamp  or Python datetime object
+        :param oldest: (Optional) Starting  date of range to look for scheduled messages as Unix timestamp  or Python datetime object
+        :return: A list of scheduled messages
+        """
+        result = slack_client.chat_scheduleMessages_list(
+            channel=self._channel if self._channel else None,
+            latest=latest if latest else None,
+            oldest=oldest if oldest else None
+        )
+        return result
