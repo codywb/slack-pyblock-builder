@@ -75,12 +75,3 @@ class Section:
         self._accessory = accessory
         self.block["accessory"] = self._accessory.json
         return self
-
-from pprint import pprint
-pprint(Section()
-       .set_text(
-         Text()
-         .set_text("Hello")
-         .as_mrkdwn()
-       )
-       .block)
