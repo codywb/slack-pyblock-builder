@@ -76,7 +76,7 @@ class Modal:
         :param title_text: String; max 24 chars
         :return: self
         """
-        self._title = Text("plain_text", title_text)
+        self._title = Text().set_text(title_text)
         self.view["title"] = self._title.json
         return self
 
@@ -87,7 +87,7 @@ class Modal:
         :param submit_text: String; max 24 chars
         :return: self
         """
-        self._submit = Text("plain_text", submit_text)
+        self._submit = Text().set_text(submit_text)
         self.view["submit"] = self._submit.json
         return self
 
@@ -97,7 +97,7 @@ class Modal:
         :param close_text: String; max 24 chars
         :return: self
         """
-        self._close = Text("plain_text", close_text)
+        self._close = Text().set_text(close_text)
         self.view["close"] = self._close.json
         return self
 
