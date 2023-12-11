@@ -285,6 +285,11 @@ class Message:
         :param oldest: (Optional) Starting  date of range to look for scheduled messages as Unix timestamp  or Python datetime object
         :return: A list of scheduled messages
         """
+        if isinstance(latest, datetime):
+            latest = latest.timestamp()
+        if isinstance(oldest, datetime):
+            latest = oldest.timestamp()
+
         result = slack_client.chat_scheduledMessages_list(
             channel=self._channel if self._channel else None,
             latest=latest if latest else None,
