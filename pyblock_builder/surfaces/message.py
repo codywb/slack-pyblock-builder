@@ -290,4 +290,4 @@ class Message:
             latest=latest if latest else None,
             oldest=oldest if oldest else None
         )
-        return result
+        return result["scheduled_messages"]
