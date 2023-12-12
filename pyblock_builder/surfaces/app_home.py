@@ -56,7 +56,7 @@ class AppHome:
     def add_blocks(self, *blocks) -> Self:
         """
         (Required) Adds the blocks that define the content of the View.
-        :param blocks: One or more blocks; max 100
+        :param blocks: One or more blocks; max 100; preface with * if passing in a list.
         :return: self
         """
         for block in blocks:

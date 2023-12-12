@@ -29,16 +29,13 @@ class Context:
         self.block["block_id"] = self._block_id
         return self
 
-    def add_elements(self, elements) -> Self:
+    def add_elements(self, *elements) -> Self:
         """
         Used to add one or more interactive elements to the block
-        :param elements: Either a single element object or a list of element objects (images or text objects only); maximum of 10 elements per block
+        :param elements: One or more element objects (images or text objects only); maximum of 10 elements per block; preface with * if passing in a list.
         :return: self
         """
-        if isinstance(elements, list):
-            for element in elements:
-                self._elements.append(element.json)
-        else:
-            self._elements.append(elements.json)
+        for element in elements:
+            self._elements.append(element.json)
         self.block["elements"] = self._elements
         return self
