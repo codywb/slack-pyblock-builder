@@ -19,7 +19,8 @@ include = [
 ]
 
 exclude = [
-    "docs"
+    "docs",
+    "tests"
 ]
 
 [tool.poetry.dependencies]
