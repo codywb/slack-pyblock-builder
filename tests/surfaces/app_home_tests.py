@@ -35,27 +35,24 @@ class TestAppHomeSurface(unittest.TestCase):
 
     def test_set_callback_id(self):
         test_app_home = AppHome()
-        test_app_home.set_callback_id("test callback id")
-
         expected = "test callback id"
+        test_app_home.set_callback_id(expected)
         actual = test_app_home._callback_id
 
         self.assertEqual(expected, actual)
 
     def test_set_private_metadata(self):
         test_app_home = AppHome()
-        test_app_home.set_private_metadata("test metadata")
-
         expected = "test metadata"
+        test_app_home.set_private_metadata(expected)
         actual = test_app_home._private_metadata
 
         self.assertEqual(expected, actual)
 
     def test_set_external_id(self):
         test_app_home = AppHome()
-        test_app_home.set_external_id("test id")
-
         expected = "test id"
+        test_app_home.set_external_id(expected)
         actual = test_app_home._external_id
 
         self.assertEqual(expected, actual)
