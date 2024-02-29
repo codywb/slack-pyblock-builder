@@ -401,7 +401,7 @@ tabs a piece of cake.
 
 - #### Publishing and Updating Home Tab Views
   
-  Great! So, composing a Home tabb view using **PyBlock Builder** is just as easy as composing a message! But how do I 
+  Great! So, composing a Home tab view using **PyBlock Builder** is just as easy as composing a message! But how do I 
   actually make them show, you ask? Just like `Message` objects, `AppHome` objects are also equipped with a method that 
   allows for easier publishing and updating when using Slack's [Bolt for Python SDK](https://slack.dev/bolt-python/tutorial/getting-started).
   
@@ -511,62 +511,62 @@ Modal views as simple as can be.
   object's `open_view()` method, pass in the API response `body` and the Slack app `client` and leave the rest to 
   **PyBlock Builder**!
 
-  - #### Updating and Pushing Modal Views
+- #### Updating and Pushing Modal Views
 
-    So, what about updating an open modal view? Well, let's take the example from above and assume we'd like to let the
-    user know their draft was saved successfully. To do this, we simple need to listen for a view submission from when the
-    user clicks the "Save" button and respond accordingly:
+  So, what about updating an open modal view? Well, let's take the example from above and assume we'd like to let the
+  user know their draft was saved successfully. To do this, we simple need to listen for a view submission from when the
+  user clicks the "Save" button and respond accordingly:
 
-    ```python
-    # Listen for view submission using callback_id set above from Save Draft modal and handle it
-    @app.view("save_modal")
-    def handle_save_submission(ack):
-        ack()
-        (Modal()
-         .set_title("Save Draft")
-         .set_callback_id("save_modal_2")
-         .set_submit_label("OK")
-         .add_blocks(
-            Section()
-            .set_text("You're draft has been saved.")
-         ).update_view_from_submission(ack)
-        )
-    ```
-    Output:
-    ![modal_submission](docs/resources/images/modal_submission.png)
+  ```python
+  # Listen for view submission using callback_id set above from Save Draft modal and handle it
+  @app.view("save_modal")
+  def handle_save_submission(ack):
+      ack()
+      (Modal()
+       .set_title("Save Draft")
+       .set_callback_id("save_modal_2")
+       .set_submit_label("OK")
+       .add_blocks(
+          Section()
+          .set_text("You're draft has been saved.")
+       ).update_view_from_submission(ack)
+      )
+  ```
+  Output:
+  ![modal_submission](docs/resources/images/modal_submission.png)
   
-    That's it! Just pass an instance of `ack`to the `Modal` object's `update_view_from_submission()` method and
-    **PyBlock Builder** will update the content of the extisting view. Alternatively, if you'd like to push a new view on
-    top of the existing view (Slack allows for an additional two views to be pushed on top of the original view), simply 
-    pass the instance of `ack` to the `push_view_from_submission()` method instead. It should be noted, however, that this
-    method only works for updating and pushing views on submission (i.e., the clicking of a modal's "submit" button). 
-    Updating or pushing views in response to other actions require the use of the `Modal` object's `update_view()` and 
-    `push_view()` methods. For example, if instead of clicking the "Save" button in our example above we clicked a new 
-    "Abort!" button, the initial view could be opened using the code below:
-    ```python
-    # Listen for triggers invoking the "save_draft" action set using set_action_id() above
-    @app.action("save_draft")
-    def save_draft_view(ack, body, client):
-        ack()
-        (Modal()
-         .set_title("Save Draft")
-         .set_callback_id("save_modal")
-         .set_submit_label("Save")
-         .set_close_label("Cancel")
-         .add_blocks(
-            Section()
-            .set_text("Save a draft?")
-            .add_accessory(
-                Button()
-                .set_label("Abort!")
-                .set_value("abort-button")
-                .set_action_id("abort_save_draft")
-                .danger()
-            )
-         ).open_view(body, client))
-    ```
-    Output:
-  ![modal_open_2](docs/resources/images/modal_open_2.png)
+  That's it! Just pass an instance of `ack`to the `Modal` object's `update_view_from_submission()` method and
+  **PyBlock Builder** will update the content of the extisting view. Alternatively, if you'd like to push a new view on
+  top of the existing view (Slack allows for an additional two views to be pushed on top of the original view), simply 
+  pass the instance of `ack` to the `push_view_from_submission()` method instead. It should be noted, however, that this
+  method only works for updating and pushing views on submission (i.e., the clicking of a modal's "submit" button). 
+  Updating or pushing views in response to other actions require the use of the `Modal` object's `update_view()` and 
+  `push_view()` methods. For example, if instead of clicking the "Save" button in our example above we clicked a new 
+  "Abort!" button, the initial view could be opened using the code below:
+  ```python
+  # Listen for triggers invoking the "save_draft" action set using set_action_id() above
+  @app.action("save_draft")
+  def save_draft_view(ack, body, client):
+      ack()
+      (Modal()
+       .set_title("Save Draft")
+       .set_callback_id("save_modal")
+       .set_submit_label("Save")
+       .set_close_label("Cancel")
+       .add_blocks(
+          Section()
+          .set_text("Save a draft?")
+          .add_accessory(
+              Button()
+              .set_label("Abort!")
+              .set_value("abort-button")
+              .set_action_id("abort_save_draft")
+              .danger()
+          )
+       ).open_view(body, client))
+  ```
+  Output:
+![modal_open_2](docs/resources/images/modal_open_2.png)
   
   And subsequently updated and/or pushed by passing the API response `body` and the Slack app `client` to the `Modal` object's `update_view()`
   or `push_view()` methods accordingly:
