@@ -1,0 +1,820 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>slack-pyblock-builder | A lightweight Python library with a declarative syntax for simplifying building apps using Slack’s Block Kit UI framework</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="slack-pyblock-builder" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A lightweight Python library with a declarative syntax for simplifying building apps using Slack’s Block Kit UI framework" />
+<meta property="og:description" content="A lightweight Python library with a declarative syntax for simplifying building apps using Slack’s Block Kit UI framework" />
+<link rel="canonical" href="https://codywb.github.io/slack-pyblock-builder/" />
+<meta property="og:url" content="https://codywb.github.io/slack-pyblock-builder/" />
+<meta property="og:site_name" content="slack-pyblock-builder" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="slack-pyblock-builder" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"A lightweight Python library with a declarative syntax for simplifying building apps using Slack’s Block Kit UI framework","headline":"slack-pyblock-builder","name":"slack-pyblock-builder","url":"https://codywb.github.io/slack-pyblock-builder/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/slack-pyblock-builder/assets/css/style.css?v=6382a11bec0d18b8bc340a417572454e90a65527">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+<meta name="google-site-verification" content="uzKH_ykx2ZrySvGjERz5193WZHqSPq9zs_pAPMBIy5w" />
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/slack-pyblock-builder/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://codywb.github.io/slack-pyblock-builder/">slack-pyblock-builder</a></h1>
+      
+
+      <h2><img src="/slack-pyblock-builder/docs/resources/images/logo-full.png" alt="logo-full" /></h2>
+<p><strong>PyBlock Builder</strong> is a lightweight library written in Python for constructing UI with Slack’s <a href="https://api.slack.com/block-kit">Block Kit UI</a> 
+framework. It was designed to make it easier for anyone—from hobbyists to professional devs—to create Slack apps faster 
+with fewer lines of code.</p>
+
+<p>For the purposes of demonstrating how to use the features of <strong>PyBlock Builder</strong>, this documentation assumes at least 
+basic familiarity with the Slack platform, the Slack API, the <a href="https://api.slack.com/block-kit">Block Kit UI</a> framework, and the <a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a>. 
+If you are new to any or all of these, please check out the great documentation provided by Slack from the link above.</p>
+
+<hr />
+<p><img src="https://img.shields.io/pypi/v/pyblock-builder.svg" alt="img" />
+<img src="https://img.shields.io/pypi/pyversions/pyblock-builder.svg" alt="img" /></p>
+
+<h2 id="-features">💡 Features</h2>
+
+<ul>
+  <li>Optimized for use with Slack’s <a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a></li>
+  <li>Declarative syntax with method chaining</li>
+  <li>IDE-friendly with descriptive docstrings describing each component and its methods</li>
+  <li>Helper module with functions to simplify formatting text in Slack’s <code class="language-plaintext highlighter-rouge">mrkdwn</code> standard</li>
+</ul>
+
+<h2 id="benefits">🎯Benefits</h2>
+
+<ul>
+  <li>Write more efficient, easier-to-understand code in less time</li>
+</ul>
+
+<hr />
+
+<h1 id="-getting-started">🔰 Getting Started</h1>
+
+<h2 id="installation">Installation</h2>
+
+<h3 id="using-pip">Using pip:</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pip</span> <span class="n">install</span> <span class="n">pyblock</span><span class="o">-</span><span class="n">builder</span>
+</code></pre></div></div>
+<h6 id="note-that-macoslinux-users-may-need-to-use-pip3-instead-of-pip-depending-on-your-individual-environment-settings">*Note that macOS/Linux users may need to use <code class="language-plaintext highlighter-rouge">pip3</code> instead of <code class="language-plaintext highlighter-rouge">pip</code> depending on your individual environment settings.</h6>
+
+<h2 id="usage">Usage</h2>
+
+<p><strong>PyBlock Builder</strong> is made up of the following components:</p>
+
+<p><code class="language-plaintext highlighter-rouge">surfaces</code> - A collection of classes representing app surfaces on the Slack platform, such as <code class="language-plaintext highlighter-rouge">Message</code> and <code class="language-plaintext highlighter-rouge">AppHome</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">blocks</code> - A collection of classes representing blocks—visual components that can be arranged to
+create app layouts—from Slack’s Block Kit UI framework. These can be added to your app’s <code class="language-plaintext highlighter-rouge">surfaces</code> and include <code class="language-plaintext highlighter-rouge">Section</code> and <code class="language-plaintext highlighter-rouge">Input</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">elements</code> - A collection of classes representing block elements—the UI elements such as <code class="language-plaintext highlighter-rouge">Button</code> and <code class="language-plaintext highlighter-rouge">SelectMenu</code>
+used to capture user interaction. These can be added to your app’s <code class="language-plaintext highlighter-rouge">blocks</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">objects</code> - A collection of classes representing composition objects—items used to define text, options, or other
+interactive features within certain <code class="language-plaintext highlighter-rouge">blocks</code> and block <code class="language-plaintext highlighter-rouge">elements</code>. These include <code class="language-plaintext highlighter-rouge">Text</code>, <code class="language-plaintext highlighter-rouge">Option</code>, and <code class="language-plaintext highlighter-rouge">ConfirmationDialog</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">mrkdwn</code> - A collection of functions provided to simplify working with Slack’s <code class="language-plaintext highlighter-rouge">mrkdwn</code> standard, such as <code class="language-plaintext highlighter-rouge">bold()</code> or 
+<code class="language-plaintext highlighter-rouge">blockquote()</code>.</p>
+
+<h3 id="compatibility">Compatibility</h3>
+
+<p>The current version of <strong>PyBlock Builder</strong> features support for the following parts of the Slack API and Block Kit framework:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th style="text-align: center">Supported?</th>
+      <th>Corresponding PyBlock Builder Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>App Surfaces</strong></td>
+      <td style="text-align: center"> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>└ App Home</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">surfaces.app_home.AppHome()</code></td>
+    </tr>
+    <tr>
+      <td>└ Modal</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">surfaces.modal.Modal()</code></td>
+    </tr>
+    <tr>
+      <td>└ Message</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">surfaces.message.Message()</code></td>
+    </tr>
+    <tr>
+      <td>└ Workflow Step</td>
+      <td style="text-align: center">:x:</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>Blocks</strong></td>
+      <td style="text-align: center"> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>└ Actions</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.actions.Actions()</code></td>
+    </tr>
+    <tr>
+      <td>└ Context</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.context.Context()</code></td>
+    </tr>
+    <tr>
+      <td>└ Divider</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.divider.Divider()</code></td>
+    </tr>
+    <tr>
+      <td>└ File</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.file.File()</code></td>
+    </tr>
+    <tr>
+      <td>└ Header</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.headaer.Header()</code></td>
+    </tr>
+    <tr>
+      <td>└ Image</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.image.Image()</code></td>
+    </tr>
+    <tr>
+      <td>└ Input</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.input.Input()</code></td>
+    </tr>
+    <tr>
+      <td>└ Rich Text</td>
+      <td style="text-align: center">:x:</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>└ Section</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.section.Section()</code></td>
+    </tr>
+    <tr>
+      <td>└ Video</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">blocks.video.Video()</code></td>
+    </tr>
+    <tr>
+      <td><strong>Block Elements</strong></td>
+      <td style="text-align: center"> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>└ Button</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.button.Button()</code></td>
+    </tr>
+    <tr>
+      <td>└ Checkboxes</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.checkboxes.Checkboxes()</code></td>
+    </tr>
+    <tr>
+      <td>└ Date Picker</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.date_picker.DatePicker()</code></td>
+    </tr>
+    <tr>
+      <td>└ Datetime Picker</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.datetime_picker.DatetimePicker()</code></td>
+    </tr>
+    <tr>
+      <td>└ Email Input</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.email_input.EmailInput()</code></td>
+    </tr>
+    <tr>
+      <td>└ Image</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.image.ImageElement()</code></td>
+    </tr>
+    <tr>
+      <td>└ Multi-select Menu</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.multiselect_menu.MultiStaticSelect()</code><br /><code class="language-plaintext highlighter-rouge">elements.multiselect_menu.MultiUsersSelect()</code><br /><code class="language-plaintext highlighter-rouge">elements.multiselect_menu.MultiConversationsSelect()</code><br /><code class="language-plaintext highlighter-rouge">elements.multiselect_menu.MultiChannelsSelect()</code></td>
+    </tr>
+    <tr>
+      <td>└ Number Input</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.number_input.NumberInput()</code></td>
+    </tr>
+    <tr>
+      <td>└ Overflow Menu</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.overflow_menu.OverflowMenu()</code></td>
+    </tr>
+    <tr>
+      <td>└ Plain-text Input</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.plain_text_input.PlainTextInput()</code></td>
+    </tr>
+    <tr>
+      <td>└ Radio Buttons</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.radio_buttons.RadioButtons()</code></td>
+    </tr>
+    <tr>
+      <td>└ Select Menu</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.select_menu.StaticSelectMenu()</code><br /><code class="language-plaintext highlighter-rouge">elements.select_menu.UsersSelectMenu()</code><br /><code class="language-plaintext highlighter-rouge">elements.select_menu.ConversationsSelectMenu()</code><br /><code class="language-plaintext highlighter-rouge">elements.select_menu.ChannelsSelectMenu()</code></td>
+    </tr>
+    <tr>
+      <td>└ Time Picker</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.time_picker.TimePicker()</code></td>
+    </tr>
+    <tr>
+      <td>└ URL Input</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">elements.url_input.UrlInput()</code></td>
+    </tr>
+    <tr>
+      <td>└ Workflow Button</td>
+      <td style="text-align: center">:x:</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>Composition Objects</strong></td>
+      <td style="text-align: center"> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>└ Confirmation Dialog</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">objects.confirmation_dialog.ConfirmationDialog()</code></td>
+    </tr>
+    <tr>
+      <td>└ Conversations Filter</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">objects.conversations_filter.ConversationsFilter()</code></td>
+    </tr>
+    <tr>
+      <td>└ Dispatch Action Configuration</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">objects.dispatch_action_configuration.DispatchActionConfig()</code></td>
+    </tr>
+    <tr>
+      <td>└ Option</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">objects.option.Option()</code></td>
+    </tr>
+    <tr>
+      <td>└ Options Group</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">objects.options_group.OptionsGroup()</code></td>
+    </tr>
+    <tr>
+      <td>└ Text</td>
+      <td style="text-align: center">:white_check_mark:</td>
+      <td><code class="language-plaintext highlighter-rouge">objects.text.Text()</code></td>
+    </tr>
+    <tr>
+      <td>└ Trigger</td>
+      <td style="text-align: center">:x:</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>└ Workflow Object</td>
+      <td style="text-align: center">:x:</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="importing">Importing</h3>
+
+<p>The best practice for <code class="language-plaintext highlighter-rouge">surfaces</code>, <code class="language-plaintext highlighter-rouge">blocks</code>, <code class="language-plaintext highlighter-rouge">elements</code>, and <code class="language-plaintext highlighter-rouge">objects</code> is to import only the components required using absolute imports.</p>
+
+<p>For example, a simple chatbot app may begin with something like this:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.blocks</span> <span class="kn">import</span> <span class="n">Section</span><span class="p">,</span> <span class="n">Actions</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.elements</span> <span class="kn">import</span> <span class="n">Button</span>
+</code></pre></div></div>
+<p>For <strong>PyBlock Builder’s</strong> <code class="language-plaintext highlighter-rouge">mrkdwn</code> helper functions, the best practice is to import the module using the alias <code class="language-plaintext highlighter-rouge">md</code> to 
+avoid any potential conflict or confusion with similarly named functions or variables.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Allow for formatting using syntax such as md.bold(), md.emoji(), etc.
+</span><span class="kn">from</span> <span class="nn">pyblock_builder</span> <span class="kn">import</span> <span class="n">mrkdwn</span> <span class="k">as</span> <span class="n">md</span>
+</code></pre></div></div>
+<p>However, if this is not to your liking and you are confident that no such conflicts or confusion will arise, you may 
+alternatively import the module in such a way as to enable access to each helper function directly:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Enable bold(), blockquote(), inline_code(), and link() to be called directly. 
+# Recommended when you know you will only need a few specific funtions
+</span><span class="kn">from</span> <span class="nn">pyblock_builder.mrkdwn</span> <span class="kn">import</span> <span class="n">bold</span><span class="p">,</span> <span class="n">blockquote</span><span class="p">,</span> <span class="n">inline_code</span><span class="p">,</span> <span class="n">link</span>
+
+<span class="c1"># Enable all functions in the module to be called directly
+</span><span class="kn">from</span> <span class="nn">pyblock_builder.mrkdwn</span> <span class="kn">import</span> <span class="o">*</span>
+</code></pre></div></div>
+<h3 id="working-with-messages">Working with Messages</h3>
+
+<p>Messages are the core of the Slack platform and <strong>PyBlock Builder</strong> is optimized for use with Slack’s 
+<a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a> to make working with them as efficient and 
+painless as possible.</p>
+
+<ul>
+  <li>
+    <h4 id="composing-a-message">Composing a Message</h4>
+    <p>Messages in <strong>PyBlock Builder</strong> are naturally constructed using the <code class="language-plaintext highlighter-rouge">Message</code> class from the <code class="language-plaintext highlighter-rouge">surfaces</code> module. 
+The following is an example of how to compose a barebones message:</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">Message</span>
+
+<span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+ <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"I'm posting this message with PyBlock Builder!"</span><span class="p">)</span> <span class="c1"># main body text of the message
+</span> <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span> <span class="c1"># ID of the channel for posting or user ID for DM
+</span><span class="p">)</span>
+</code></pre></div>    </div>
+
+    <h6 id="note-that-the--wrapping-the-code-constructing-the-instance-of-the-message-object-is-required-by-pycharm-and-other-ides-to-ensure-proper-indentation-for-method-chaining-and-serves-no-functional-purpose-in-pyblock-builder">*Note that the <code class="language-plaintext highlighter-rouge">()</code> wrapping the code constructing the instance of the <code class="language-plaintext highlighter-rouge">Message</code> object is required by PyCharm and other IDEs to ensure proper indentation for method chaining and serves no functional purpose in <strong>PyBlock Builder</strong>.</h6>
+
+    <p>A more complex message may, of course, include—you guessed it—blocks!</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">Message</span>
+  <span class="kn">from</span> <span class="nn">pyblock_builder.blocks</span> <span class="kn">import</span> <span class="n">Section</span><span class="p">,</span> <span class="n">Divider</span><span class="p">,</span> <span class="n">Actions</span>
+  <span class="kn">from</span> <span class="nn">pyblock_builder.elements</span> <span class="kn">import</span> <span class="n">Button</span>
+  <span class="kn">from</span> <span class="nn">pyblock_builder</span> <span class="kn">import</span> <span class="n">mrkdwn</span> <span class="k">as</span> <span class="n">md</span>
+    
+  <span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+   <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+      <span class="n">Section</span><span class="p">()</span>
+      <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="sa">f</span><span class="s">"Johnny, what can you make out of this? </span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'airplane'</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">),</span>
+      <span class="n">Divider</span><span class="p">(),</span>
+      <span class="n">Actions</span><span class="p">()</span>
+      <span class="p">.</span><span class="n">add_elements</span><span class="p">(</span>
+          <span class="n">Button</span><span class="p">()</span>
+          <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'tophat'</span><span class="p">)</span><span class="si">}</span><span class="s"> Hat"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"hat-button"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"hat_button_pressed"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_style</span><span class="p">(</span><span class="s">"primary"</span><span class="p">),</span> <span class="c1"># colors a button green
+</span>          <span class="n">Button</span><span class="p">()</span>
+          <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'gem'</span><span class="p">)</span><span class="si">}</span><span class="s"> Broach"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"broach-button"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"broach_button_pressed"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">danger</span><span class="p">(),</span> <span class="c1"># colors a button red; alternative to using set_style("danger")
+</span>          <span class="n">Button</span><span class="p">()</span>
+          <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'lizard'</span><span class="p">)</span><span class="si">}</span><span class="s"> Pterodactyl"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"pterodactyl-button"</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"pterodactyl_button_pressed"</span><span class="p">),</span>
+      <span class="p">)</span>
+   <span class="p">)</span>
+   <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"Johnny, what can you make of this?"</span><span class="p">)</span> <span class="c1"># when blocks are used this becomes a fallback string for display in notifcations
+</span>   <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span> <span class="c1"># ID of the channel for posting or user ID for DM
+</span>  <span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <h4 id="posting-and-scheduling-messages">Posting and Scheduling Messages</h4>
+
+    <p>While the above examples show how simple and intuitive it is to construct a message using <strong>PyBlock Builder</strong>,
+<code class="language-plaintext highlighter-rouge">Message</code> objects are also equipped with some handy features that allow for easier posting and scheduling when 
+using Slack’s <a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a>.</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simple demonstration of how to post a message with Slack's Bolt for Python SDK and PyBlock Builder
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">slack_bolt</span> <span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span> <span class="nn">slack_bolt.adapter.socket_mode</span> <span class="kn">import</span> <span class="n">SocketModeHandler</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">Message</span>
+
+<span class="c1"># Initializes your app with your bot token and socket mode handler
+</span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"SLACK_BOT_TOKEN"</span><span class="p">))</span>
+
+<span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+  <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"I'm posting this message using PyBlock Builder!"</span><span class="p">)</span> <span class="c1"># main body text of the message
+</span>  <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span> <span class="c1"># ID of the channel for posting or user ID for DM
+</span>  <span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">client</span><span class="p">)</span>
+<span class="p">)</span>
+  
+<span class="c1"># Start your app
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  <span class="n">SocketModeHandler</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">"SLACK_APP_TOKEN"</span><span class="p">]).</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/message_post_1.png" alt="message_post_1" />
+As demonstrated above, posting our first messsage example from above with <strong>PyBlock Builder</strong> is as simple as passing the <code class="language-plaintext highlighter-rouge">WebClient</code> provided to
+your Bolt app as <code class="language-plaintext highlighter-rouge">app.client</code> to the <code class="language-plaintext highlighter-rouge">post()</code> method of the <code class="language-plaintext highlighter-rouge">Message</code> object. <strong>PyBlock Builder</strong> takes care of the 
+rest for you! Now, let’s try scheduling our more complex message example to be sent at a certain time:</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simple demonstration of how to schedule a message with Slack's Bolt for Python SDK and PyBlock Builder
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">slack_bolt</span> <span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span> <span class="nn">slack_bolt.adapter.socket_mode</span> <span class="kn">import</span> <span class="n">SocketModeHandler</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.blocks</span> <span class="kn">import</span> <span class="n">Section</span><span class="p">,</span> <span class="n">Divider</span><span class="p">,</span> <span class="n">Actions</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.elements</span> <span class="kn">import</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder</span> <span class="kn">import</span> <span class="n">mrkdwn</span> <span class="k">as</span> <span class="n">md</span>
+
+<span class="c1"># Initializes your app with your bot token and socket mode handler
+</span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"SLACK_BOT_TOKEN"</span><span class="p">))</span>
+
+<span class="c1"># Create a datetime object representing the date and time for posting
+</span><span class="n">when_to_post</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">59</span><span class="p">)</span>
+  
+<span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+ <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+    <span class="n">Section</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="sa">f</span><span class="s">"Johnny, what can you make out of this? </span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'airplane'</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">),</span>
+    <span class="n">Divider</span><span class="p">(),</span>
+    <span class="n">Actions</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">add_elements</span><span class="p">(</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'tophat'</span><span class="p">)</span><span class="si">}</span><span class="s"> Hat"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"hat-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"hat_button_pressed"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_style</span><span class="p">(</span><span class="s">"primary"</span><span class="p">),</span> <span class="c1"># colors a button green
+</span>        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'gem'</span><span class="p">)</span><span class="si">}</span><span class="s"> Broach"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"broach-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"broach_button_pressed"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">danger</span><span class="p">(),</span> <span class="c1"># colors a button red; alternative to using set_style("danger")
+</span>        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">md</span><span class="p">.</span><span class="n">emoji</span><span class="p">(</span><span class="s">'lizard'</span><span class="p">)</span><span class="si">}</span><span class="s"> Pterodactyl"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"pterodactyl-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"pterodactyl_button_pressed"</span><span class="p">),</span>
+    <span class="p">)</span>
+ <span class="p">)</span>
+ <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"Johnny, what can you make of this?"</span><span class="p">)</span> <span class="c1"># when blocks are used this becomes a fallback string for display in notifcations
+</span> <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span> <span class="c1"># ID of the channel for posting or user ID for DM
+</span> <span class="p">.</span><span class="n">post_at</span><span class="p">(</span><span class="n">when_to_post</span><span class="p">)</span>
+ <span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">client</span><span class="p">)</span>
+<span class="p">)</span>
+  
+<span class="c1"># Start your app
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  <span class="n">SocketModeHandler</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">"SLACK_APP_TOKEN"</span><span class="p">]).</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/message_schedule.png" alt="message_schedule" />
+That’s it! Scheduling messages is as easy as using the <code class="language-plaintext highlighter-rouge">post_at()</code> method to set the date and time you wish your app to
+send the message before calling the <code class="language-plaintext highlighter-rouge">post()</code> method. For even more convenience, <code class="language-plaintext highlighter-rouge">post_at()</code> accepts values in the form 
+of a UNIX timestamp as a string or as a Python <code class="language-plaintext highlighter-rouge">datetime</code> object as shown above.</p>
+    <h6 id="note-that-it-is-still-possible-to-use-pyblock-builder-without-taking-advantage-of-the-methods-optimized-for-use-with-bolt-for-python-sdk-by-simply-assigning-an-instance-of-a-message-or-any-other-surfaces-object-to-a-variable-and-passing-its-view-payload-using-the-view-attribute-the-json-payloads-of-blocks-block-elements-or-composition-objects-can-similarly-be-accessed-using-the-block-attribute-for-the-former-or-the-json-attribute-for-the-latter-two-as-needed">*Note that it is still possible to use <strong>PyBlock Builder</strong> without taking advantage of the methods optimized for use with Bolt for Python SDK by simply assigning an instance of a <code class="language-plaintext highlighter-rouge">Message</code> (or any other <code class="language-plaintext highlighter-rouge">surfaces</code>) object to a variable and passing its view payload using the <code class="language-plaintext highlighter-rouge">.view</code> attribute. The JSON payloads of <code class="language-plaintext highlighter-rouge">blocks</code>, block <code class="language-plaintext highlighter-rouge">elements</code>, or composition <code class="language-plaintext highlighter-rouge">objects</code> can similarly be accessed using the <code class="language-plaintext highlighter-rouge">.block</code> attribute (for the former) or the <code class="language-plaintext highlighter-rouge">.json</code> attribute (for the latter two) as needed.</h6>
+  </li>
+  <li>
+    <h4 id="updating-and-deleting-messages">Updating and Deleting Messages</h4>
+    <p>Posting and scheduling messages is great, but what if you want to want to update or delete a message that your app has
+already sent? Fear not! <strong>PyBlock Builder</strong> has you covered!</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">"""
+Simple demonstration of how to post and then update a message
+with Slack's Bolt for Python SDK and PyBlock Builder
+"""</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">slack_bolt</span> <span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span> <span class="nn">slack_bolt.adapter.socket_mode</span> <span class="kn">import</span> <span class="n">SocketModeHandler</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">Message</span>
+
+<span class="c1"># Initializes your app with your bot token and socket mode handler
+</span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"SLACK_BOT_TOKEN"</span><span class="p">))</span>
+  
+<span class="c1"># Post a message and catch the response from the Slack API to reference its ID for updating later
+</span><span class="n">response</span> <span class="o">=</span> <span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"Hey, that's a nice message..."</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">client</span><span class="p">))</span>
+
+<span class="n">update_message_ts</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'message'</span><span class="p">][</span><span class="s">'ts'</span><span class="p">]</span> <span class="c1"># also accessible via response['ts']
+</span>  
+<span class="c1"># Start your app
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  <span class="n">SocketModeHandler</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">"SLACK_APP_TOKEN"</span><span class="p">]).</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/message_post_2.png" alt="message_post_2" />
+Now, all we have to do to update our message is pass in its <code class="language-plaintext highlighter-rouge">ts</code> ID which we’ve parsed from the Slack API response and 
+stored in <code class="language-plaintext highlighter-rouge">update_message_ts</code> using the <code class="language-plaintext highlighter-rouge">set_ts()</code> method when constructing a new <code class="language-plaintext highlighter-rouge">Message</code> object and then call the 
+<code class="language-plaintext highlighter-rouge">update()</code> method instead of the <code class="language-plaintext highlighter-rouge">post()</code> method.</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ...
+</span>  
+<span class="n">update_message_ts</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'message'</span><span class="p">][</span><span class="s">'ts'</span><span class="p">]</span> <span class="c1"># also accessible via response['ts']
+</span>  
+<span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+ <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span>
+ <span class="p">.</span><span class="n">set_ts</span><span class="p">(</span><span class="n">update_message_ts</span><span class="p">)</span>
+ <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"It'd be a shame if someone updated it!"</span><span class="p">)</span>
+ <span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">client</span><span class="p">))</span>
+  
+<span class="c1"># Start your app
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  <span class="n">SocketModeHandler</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">"SLACK_APP_TOKEN"</span><span class="p">]).</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/message_update.png" alt="message_update" /></p>
+
+    <p>While updating an existing message requires the use of either <code class="language-plaintext highlighter-rouge">set_text()</code> or <code class="language-plaintext highlighter-rouge">add_blocks()</code> to define the new content
+for display in the message, deleting a message requires only the use of <code class="language-plaintext highlighter-rouge">set_channel()</code> and <code class="language-plaintext highlighter-rouge">set_ts()</code>:</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ...
+</span>  
+<span class="n">delete_message_ts</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'message'</span><span class="p">][</span><span class="s">'ts'</span><span class="p">]</span> <span class="c1"># also accessible via response['ts']
+</span>  
+<span class="p">(</span><span class="n">Message</span><span class="p">()</span>
+ <span class="p">.</span><span class="n">set_channel</span><span class="p">(</span><span class="s">"C12345"</span><span class="p">)</span>
+ <span class="p">.</span><span class="n">set_ts</span><span class="p">(</span><span class="n">delete_message_ts</span><span class="p">)</span>
+ <span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">client</span><span class="p">))</span>
+  
+<span class="c1"># Start your app
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  <span class="n">SocketModeHandler</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">"SLACK_APP_TOKEN"</span><span class="p">]).</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <h3 id="working-with-app-home">Working with App Home</h3>
+  </li>
+</ul>
+
+<p>The App Home surface is a place where users can enjoy alone time with your app. Like with messages, <strong>PyBlock Builder</strong> 
+is optimized for use with Slack’s <a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a> to make publishing views to and updating views on App Home 
+tabs a piece of cake.</p>
+
+<ul>
+  <li>
+    <h4 id="composing-a-home-tab-view">Composing a Home Tab View</h4>
+    <p>App Home views in <strong>PyBlock Builder</strong> are naturally constructed using the <code class="language-plaintext highlighter-rouge">AppHome</code> class from the <code class="language-plaintext highlighter-rouge">surfaces</code> module.
+The following is an example of how to compose a simple Home tab view:</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simple example of a Home tab view with a message composer UI
+</span><span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">AppHome</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.blocks</span> <span class="kn">import</span> <span class="n">Actions</span><span class="p">,</span> <span class="n">Divider</span><span class="p">,</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.elements</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">PlainTextInput</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.mrkdwn</span> <span class="kn">import</span> <span class="n">emoji</span>
+  
+<span class="p">(</span><span class="n">AppHome</span><span class="p">()</span>
+ <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+    <span class="n">Actions</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">add_elements</span><span class="p">(</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'inbox_tray'</span><span class="p">)</span><span class="si">}</span><span class="s"> Inbox"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"inbox-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"view_inbox"</span><span class="p">),</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'outbox_tray'</span><span class="p">)</span><span class="si">}</span><span class="s"> Outbox"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"outbox-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"view_outbox"</span><span class="p">),</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'memo'</span><span class="p">)</span><span class="si">}</span><span class="s"> Compose"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"compose-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"compose_message"</span><span class="p">),</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'floppy_disk'</span><span class="p">)</span><span class="si">}</span><span class="s"> Save Draft"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"save-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"save_draft"</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">Divider</span><span class="p">(),</span>
+    <span class="n">Input</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="s">"New Message: "</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">add_element</span><span class="p">(</span>
+        <span class="n">PlainTextInput</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">enable_multiline</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"message_input"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_placeholder_text</span><span class="p">(</span><span class="sa">f</span><span class="s">"Compose your message here... "</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">Actions</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">add_elements</span><span class="p">(</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'x'</span><span class="p">)</span><span class="si">}</span><span class="s"> Cancel"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"cancel-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"cancel_message"</span><span class="p">),</span>
+        <span class="n">Button</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'postbox'</span><span class="p">)</span><span class="si">}</span><span class="s"> Send"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"send-button"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"send_message"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">primary</span><span class="p">()</span>
+    <span class="p">)</span>
+  <span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <h4 id="publishing-and-updating-home-tab-views">Publishing and Updating Home Tab Views</h4>
+
+    <p>Great! So, composing a Home tab view using <strong>PyBlock Builder</strong> is just as easy as composing a message! But how do I 
+actually make them show, you ask? Just like <code class="language-plaintext highlighter-rouge">Message</code> objects, <code class="language-plaintext highlighter-rouge">AppHome</code> objects are also equipped with a method that 
+allows for easier publishing and updating when using Slack’s <a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a>.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simple example of a Home tab view with a message composer UI
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">slack_bolt</span> <span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span> <span class="nn">slack_bolt.adapter.socket_mode</span> <span class="kn">import</span> <span class="n">SocketModeHandler</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.surfaces</span> <span class="kn">import</span> <span class="n">AppHome</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.blocks</span> <span class="kn">import</span> <span class="n">Actions</span><span class="p">,</span> <span class="n">Divider</span><span class="p">,</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.elements</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">PlainTextInput</span>
+<span class="kn">from</span> <span class="nn">pyblock_builder.mrkdwn</span> <span class="kn">import</span> <span class="n">emoji</span>
+
+<span class="c1"># Initializes your app with your bot token and socket mode handler
+</span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"SLACK_BOT_TOKEN"</span><span class="p">))</span>
+
+<span class="c1"># Subscribe to the app_home_opened event to listen for when users open your app
+</span><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">event</span><span class="p">(</span><span class="s">"app_home_opened"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">update_home_tab</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">AppHome</span><span class="p">()</span>
+     <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+        <span class="n">Actions</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">add_elements</span><span class="p">(</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'inbox_tray'</span><span class="p">)</span><span class="si">}</span><span class="s"> Inbox"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"inbox-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"view_inbox"</span><span class="p">),</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'outbox_tray'</span><span class="p">)</span><span class="si">}</span><span class="s"> Outbox"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"outbox-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"view_outbox"</span><span class="p">),</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'memo'</span><span class="p">)</span><span class="si">}</span><span class="s"> Compose"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"compose-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"compose_message"</span><span class="p">),</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'floppy_disk'</span><span class="p">)</span><span class="si">}</span><span class="s"> Save Draft"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"save-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"save_draft"</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">Divider</span><span class="p">(),</span>
+        <span class="n">Input</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="s">"New Message: "</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">add_element</span><span class="p">(</span>
+            <span class="n">PlainTextInput</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">enable_multiline</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"message_input"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_placeholder_text</span><span class="p">(</span><span class="sa">f</span><span class="s">"Compose your message here... "</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">Actions</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">add_elements</span><span class="p">(</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'x'</span><span class="p">)</span><span class="si">}</span><span class="s"> Cancel"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"cancel-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"cancel_message"</span><span class="p">),</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">emoji</span><span class="p">(</span><span class="s">'postbox'</span><span class="p">)</span><span class="si">}</span><span class="s"> Send"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"send-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"send_message"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">primary</span><span class="p">()</span>
+        <span class="p">)</span>
+      <span class="p">)</span>
+    <span class="p">).</span><span class="n">publish_view</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+  
+<span class="c1"># Start your app
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  <span class="n">SocketModeHandler</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">"SLACK_APP_TOKEN"</span><span class="p">]).</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/app_home.png" alt="app_home" /></p>
+
+    <p>Both publishing and updating views on App Home surfaces are done via the <code class="language-plaintext highlighter-rouge">publish_view()</code> method and require that the
+the app <code class="language-plaintext highlighter-rouge">client</code>, the <code class="language-plaintext highlighter-rouge">event</code> or <code class="language-plaintext highlighter-rouge">blocks_action</code> payload, and the instance of the <code class="language-plaintext highlighter-rouge">logger</code> class declared as arguments in the 
+<code class="language-plaintext highlighter-rouge">home_tab_opened()</code> function be passed to the <code class="language-plaintext highlighter-rouge">publish_view()</code> method.</p>
+  </li>
+</ul>
+
+<h3 id="working-with-modals">Working with Modals</h3>
+
+<p>Modals are focused surfaces that allow you to collect user data and display dynamic information. Like with messages and 
+Home tab views, <strong>PyBlock Builder</strong> is optimized for use with Slack’s <a href="https://slack.dev/bolt-python/tutorial/getting-started">Bolt for Python SDK</a> to make working with
+Modal views as simple as can be.</p>
+
+<ul>
+  <li>
+    <h4 id="composing-and-opening-a-modal-view">Composing and Opening a Modal View</h4>
+
+    <p>Modal views in <strong>PyBlock Builder</strong> are naturally constructed using the <code class="language-plaintext highlighter-rouge">Modal</code> class from the <code class="language-plaintext highlighter-rouge">surfaces</code> module.
+The following example builds off of our simple message composer UI above and shows how to compose a simple Modal view 
+that opens when you click the “Save Draft” button:</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Listen for triggers invoking the action assigned to the "Save Draft" button using the set_action_id() method above
+</span><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">action</span><span class="p">(</span><span class="s">"save_draft"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">save_draft_view</span><span class="p">(</span><span class="n">ack</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+    <span class="n">ack</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">Modal</span><span class="p">()</span>
+     <span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"Save Draft"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_callback_id</span><span class="p">(</span><span class="s">"save_modal"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_submit_label</span><span class="p">(</span><span class="s">"Save"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_close_label</span><span class="p">(</span><span class="s">"Discard"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+        <span class="n">Section</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"Save a draft?"</span><span class="p">)</span>
+     <span class="p">).</span><span class="n">open_view</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">client</span><span class="p">))</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/modal_open_1.png" alt="modal_open" /></p>
+
+    <p>Easy, right? Simply construct modals in the same manner as with messages and Home tab views and call the <code class="language-plaintext highlighter-rouge">Modal</code> 
+object’s <code class="language-plaintext highlighter-rouge">open_view()</code> method, pass in the API response <code class="language-plaintext highlighter-rouge">body</code> and the Slack app <code class="language-plaintext highlighter-rouge">client</code> and leave the rest to 
+<strong>PyBlock Builder</strong>!</p>
+  </li>
+  <li>
+    <h4 id="updating-and-pushing-modal-views">Updating and Pushing Modal Views</h4>
+
+    <p>So, what about updating an open modal view? Well, let’s take the example from above and assume we’d like to let the
+user know their draft was saved successfully. To do this, we simple need to listen for a view submission from when the
+user clicks the “Save” button and respond accordingly:</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Listen for view submission using callback_id set above from Save Draft modal and handle it
+</span><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="s">"save_modal"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_save_submission</span><span class="p">(</span><span class="n">ack</span><span class="p">):</span>
+    <span class="n">ack</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">Modal</span><span class="p">()</span>
+     <span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"Save Draft"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_callback_id</span><span class="p">(</span><span class="s">"save_modal_2"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_submit_label</span><span class="p">(</span><span class="s">"OK"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+        <span class="n">Section</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"You're draft has been saved."</span><span class="p">)</span>
+     <span class="p">).</span><span class="n">update_view_from_submission</span><span class="p">(</span><span class="n">ack</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/modal_submission.png" alt="modal_submission" /></p>
+
+    <p>That’s it! Just pass an instance of <code class="language-plaintext highlighter-rouge">ack</code>to the <code class="language-plaintext highlighter-rouge">Modal</code> object’s <code class="language-plaintext highlighter-rouge">update_view_from_submission()</code> method and
+<strong>PyBlock Builder</strong> will update the content of the extisting view. Alternatively, if you’d like to push a new view on
+top of the existing view (Slack allows for an additional two views to be pushed on top of the original view), simply 
+pass the instance of <code class="language-plaintext highlighter-rouge">ack</code> to the <code class="language-plaintext highlighter-rouge">push_view_from_submission()</code> method instead. It should be noted, however, that this
+method only works for updating and pushing views on submission (i.e., the clicking of a modal’s “submit” button). 
+Updating or pushing views in response to other actions require the use of the <code class="language-plaintext highlighter-rouge">Modal</code> object’s <code class="language-plaintext highlighter-rouge">update_view()</code> and 
+<code class="language-plaintext highlighter-rouge">push_view()</code> methods. For example, if instead of clicking the “Save” button in our example above we clicked a new 
+“Abort!” button, the initial view could be opened using the code below:</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Listen for triggers invoking the "save_draft" action set using set_action_id() above
+</span><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">action</span><span class="p">(</span><span class="s">"save_draft"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">save_draft_view</span><span class="p">(</span><span class="n">ack</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+    <span class="n">ack</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">Modal</span><span class="p">()</span>
+     <span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"Save Draft"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_callback_id</span><span class="p">(</span><span class="s">"save_modal"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_submit_label</span><span class="p">(</span><span class="s">"Save"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_close_label</span><span class="p">(</span><span class="s">"Cancel"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+        <span class="n">Section</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"Save a draft?"</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">add_accessory</span><span class="p">(</span>
+            <span class="n">Button</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">set_label</span><span class="p">(</span><span class="s">"Abort!"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="s">"abort-button"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">set_action_id</span><span class="p">(</span><span class="s">"abort_save_draft"</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">danger</span><span class="p">()</span>
+        <span class="p">)</span>
+     <span class="p">).</span><span class="n">open_view</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">client</span><span class="p">))</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/modal_open_2.png" alt="modal_open_2" /></p>
+
+    <p>And subsequently updated and/or pushed by passing the API response <code class="language-plaintext highlighter-rouge">body</code> and the Slack app <code class="language-plaintext highlighter-rouge">client</code> to the <code class="language-plaintext highlighter-rouge">Modal</code> object’s <code class="language-plaintext highlighter-rouge">update_view()</code>
+or <code class="language-plaintext highlighter-rouge">push_view()</code> methods accordingly:</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">action</span><span class="p">(</span><span class="s">"abort_save_draft"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">abort_save_draft</span><span class="p">(</span><span class="n">ack</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+    <span class="n">ack</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">Modal</span><span class="p">()</span>
+     <span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"Save Draft"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_callback_id</span><span class="p">(</span><span class="s">"save_modal_2"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">set_submit_label</span><span class="p">(</span><span class="s">"OK"</span><span class="p">)</span>
+     <span class="p">.</span><span class="n">add_blocks</span><span class="p">(</span>
+        <span class="n">Section</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">"Abort successful!"</span><span class="p">)</span>
+    <span class="p">).</span><span class="n">update_view</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span> <span class="c1"># or .push_view(body, client) to push a new view on to the stack
+</span>  <span class="p">)</span>
+</code></pre></div>    </div>
+    <p>Output:
+<img src="/slack-pyblock-builder/docs/resources/images/modal_action.png" alt="modal_action" /></p>
+  </li>
+</ul>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/codywb/slack-pyblock-builder/edit/main/README.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
