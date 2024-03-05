@@ -27,7 +27,7 @@ If you are new to any or all of these, please check out the great documentation 
 
 # 🔰 Getting Started
 
-## :one: Installation
+## Installation
 
 ### Using pip: 
 ```python 
@@ -35,7 +35,7 @@ pip install pyblock-builder
 ```
 ###### *Note that macOS/Linux users may need to use `pip3` instead of `pip` depending on your individual environment settings.
 
-## :two: Usage
+## Usage
 
 **PyBlock Builder** is made up of the following components:
 
