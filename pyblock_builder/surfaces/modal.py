@@ -146,32 +146,38 @@ class Modal:
         )
         return result
 
-    def update_view(self, request_body, slack_client):
+    def update_view(self, request_body, slack_client, view_id=None):
         """
         Uses the attributes set on the class to generate a view payload and passes it to the views.update Web API method
         of the Slack Bolt for Python client.
         :param response_body: the response passed to the app from the Slack API
         :param slack_client: an instance of the Slack Bolt for Python's app.client
+        :param view_id: (Optional) Required to update a view after the initial 3-second timeout
         :return: Slack API response
         """
+        if not view_id:
+            view_id = request_body["view"]["id"]
         result = slack_client.views_update(
-            view_id=request_body["view"]["id"],
+            view_id=view_id,
             hash=request_body["view"]["hash"],
             view=self.view
         )
         return result
 
-    def push_view(self, request_body, slack_client):
+    def push_view(self, request_body, slack_client, view_id=None):
         """
         Uses the attributes set on the class to generate a view payload and passes it to the views.push Web API method
         of the Slack Bolt for Python client. Only two additional views may be pushed after opening a Modal.
         :param response_body: the response passed to the app from the Slack API
         :param slack_client: an instance of the Slack Bolt for Python's app.client
+        :param view_id: (Optional) Required to push a view after the initial 3-second timeout
         :return: Slack API response
         """
+        if not view_id:
+            view_id = request_body["view"]["id"]
         result = slack_client.views_push(
             trigger_id=request_body["trigger_id"],
-            view_id=request_body["view"]["id"],
+            view_id=view_id,
             hash=request_body["view"]["hash"],
             view=self.view
         )
