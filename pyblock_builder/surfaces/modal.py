@@ -136,14 +136,15 @@ class Modal:
         of the Slack Bolt for Python client.
         :param response_body: the response passed to the app from the Slack API
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :return: nothing
+        :return: Slack API response
         """
-        slack_client.views_open(
+        result = slack_client.views_open(
             trigger_id=request_body["trigger_id"],
             view_id=request_body["view"]["id"],
             hash=request_body["view"]["hash"],
             view=self.view
         )
+        return result
 
     def update_view(self, request_body, slack_client):
         """
@@ -151,13 +152,14 @@ class Modal:
         of the Slack Bolt for Python client.
         :param response_body: the response passed to the app from the Slack API
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :return: nothing
+        :return: Slack API response
         """
-        slack_client.views_update(
+        result = slack_client.views_update(
             view_id=request_body["view"]["id"],
             hash=request_body["view"]["hash"],
             view=self.view
         )
+        return result
 
     def push_view(self, request_body, slack_client):
         """
@@ -165,14 +167,15 @@ class Modal:
         of the Slack Bolt for Python client. Only two additional views may be pushed after opening a Modal.
         :param response_body: the response passed to the app from the Slack API
         :param slack_client: an instance of the Slack Bolt for Python's app.client
-        :return: nothing
+        :return: Slack API response
         """
-        slack_client.views_push(
+        result = slack_client.views_push(
             trigger_id=request_body["trigger_id"],
             view_id=request_body["view"]["id"],
             hash=request_body["view"]["hash"],
             view=self.view
         )
+        return result
 
     def update_view_from_submission(self, ack):
         """
@@ -180,9 +183,10 @@ class Modal:
         of type "update" with a newly composed view. Use when responding to a views_submission request (i.e., when a
         views payload includes any input blocks).
         :param ack: the ack() function received from the Slack Bolt for Python framework
-        :return: nothing
+        :return: Slack API response
         """
-        ack(response_action="update", view=self.view)
+        result = ack(response_action="update", view=self.view)
+        return result
 
     def push_view_from_submission(self, ack):
         """
@@ -191,6 +195,7 @@ class Modal:
         pushed after opening a Modal. Use when responding to a views_submission request (i.e., when a
         views payload includes any input blocks).
         :param ack: the ack() function received from the Slack Bolt for Python framework
-        :return: nothing
+        :return: Slack API response
         """
-        ack(response_action="push", view=self.view)
+        result = ack(response_action="push", view=self.view)
+        return result

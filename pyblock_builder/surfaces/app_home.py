@@ -71,16 +71,17 @@ class AppHome:
         :param slack_client: an instance of the Slack Bolt for Python's app.client
         :param payload: the event or other API response payload passed to the app from the Slack API
         :param logger: instance of logger to correctly log API errors
-        :return: nothing
+        :return: Slack API response
         """
         if payload["type"] == "app_home_opened":
             user_id = payload["user"]
         else:
             user_id = payload["user"]["id"]
         try:
-            slack_client.views_publish(
+            result = slack_client.views_publish(
                 user_id=user_id,
                 view=self.view
             )
+            return result
         except Exception as e:
             logger.error(f"Error publishing home tab: {e}")
