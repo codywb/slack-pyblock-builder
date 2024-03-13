@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyblock-builder"
-version = "0.2.8"
+version = "0.2.9"
 description = "A lightweight Python library with a declarative syntax for simplifying building apps using Slack's Block Kit UI framework"
 authors = ["codywb <codybranscum@gmail.com>"]
 license = "BSD-3-Clause"
