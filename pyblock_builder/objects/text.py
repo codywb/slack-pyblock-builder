@@ -5,46 +5,47 @@ else:
     from typing_extensions import Self
 from dataclasses import dataclass, asdict
 import json
-from _errors import FieldLengthError, RequiredFieldError
+from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError
 
 @dataclass
 class Text:
     """
     A Python class representing a Text object from the Slack BlockKit UI framework
     """
-    _text: str | None = None
+    text: str | None = None
 
     def set_text(self, text: str) -> Self:
         if not 1 <= len(text) <= 3000:
-            raise FieldLengthError(self, "text", min_length=1, max_length=3000)
-        self._text = text
+            raise TextLengthError(self, field="text", min_length=1, max_length=3000)
+        self.text = text
         return self
 
     def build_to_json(self) -> str:
-        if self._text is None:
-            raise RequiredFieldError(self, "text")
+        if self.text is None:
+            raise RequiredFieldError(self, missing_field_names="text")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         return json.dumps({k.replace("_", ""): v for k, v in asdict(self).items() if v is not None})
 
 @dataclass
 class PlainText(Text):
-    _type: str = "plain_text"
-    _emoji: bool | None = None
+    type: str = "plain_text"
+    emoji: bool | None = None
 
     def escape_emojis(self) -> Self:
-        self._emoji = False
+        self.emoji = False
         return self
 
 @dataclass
 class MrkdwnText(Text):
-    _type: str = "mrkdwn"
-    _verbatim: bool | None = None
+    type: str = "mrkdwn"
+    verbatim: bool | None = None
 
     def is_verbatim(self) -> Self:
-        self._verbatim = True
+        self.verbatim = True
         return self
 
-t = PlainText().build_to_json()
+# t = PlainText("HELLO").build_to_json()
+# print(t)
 #
 # class Text:
 #     """

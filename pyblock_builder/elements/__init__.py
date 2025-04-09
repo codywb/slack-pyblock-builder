@@ -4,7 +4,7 @@ from .datetime_picker import DatetimePicker
 from .select_menu import StaticSelectMenu, ConversationsSelectMenu, ChannelsSelectMenu, UsersSelectMenu
 from .multiselect_menu import MultiStaticSelect, MultiConversationsSelect, MultiChannelsSelect, MultiUsersSelect
 from .button import Button
-from .image import ImageElement
+from .image import Image
 from .checkboxes import Checkboxes
 from .email_input import EmailInput
 from .number_input import NumberInput

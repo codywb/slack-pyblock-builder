@@ -5,64 +5,74 @@ else:
     from typing_extensions import Self
 from dataclasses import dataclass
 import json
-from _errors import FieldLengthError, RequiredFieldError
+from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError
 from pyblock_builder.base_blocks import Element
 from pyblock_builder.objects.text import Text, PlainText, MrkdwnText
+from pyblock_builder.elements import *
 
 
 @dataclass
 class Section:
-    _type: str | None = "section"
-    _block_id: str | None = None
-    _text: Text | None = None
-    _fields: list[Text] | None = None
-    _accessory: Element | None = None
+    type: str | None = "section"
+    block_id: str | None = None
+    text: Text | None = None
+    fields: list[Text] | None = None
+    accessory: Element | None = None
 
     def set_text(self, text: Text) -> Self:
         if not isinstance(text, (PlainText, MrkdwnText)):
-            raise TypeError(f"text must be a PlainText or MrkdwnText object, not {type(text).__name__}")
-        if not 1 <= len(text._text) <= 3000:
-            raise FieldLengthError(self, "text", min_length=1, max_length=3000)
-        self._text = text
+            raise IncorrectTypeError(self, method="set_text", compatible_types=[PlainText, MrkdwnText], incompatible_type=text)
+        if not 1 <= len(text.text) <= 3000:
+            raise TextLengthError(self, field="text", min_length=1, max_length=3000)
+        self.text = text
         return self
 
     def set_block_id(self, block_id: str) -> Self:
         if not 1 <= len(block_id) <= 255:
-            raise FieldLengthError(self, "block_id", min_length=1, max_length=255)
-        self._block_id = block_id
+            raise TextLengthError(self, field="block_id", min_length=1, max_length=255)
+        self.block_id = block_id
         return self
 
     def set_fields(self, fields: list[Text]) -> Self:
         if not isinstance(fields, list):
-            raise TypeError(f"'fields' field of {self.__class__.__name__} object must be provided as a List, not {type(fields).__name__}")
+            raise IncorrectTypeError(self, method="set_fields", compatible_types=list, incompatible_type=fields)
         for field in fields:
             if not isinstance(field, (PlainText, MrkdwnText)):
-                raise TypeError(f"All items in list of fields provided to {self.__class__.__name__} object must be PlainText or MrkdwnText objects, not {type(field).__name__}")
-        self._fields = fields
+                raise TypeError(f"All items in list of fields provided to {self.__class__.__name__} object must be PlainText or MrkdwnText objects")
+        self.fields = fields
         return self
 
     def add_accessory(self, accessory: Element) -> Self:
-        ...
+        # if isinstance(accessory, DatetimePicker | EmailInput | NumberInput | PlainTextInput | UrlInput):
+        compatible_elements = [
+            Button, Checkboxes, DatePicker, Image, MultiUsersSelect, MultiStaticSelect, MultiChannelsSelect,
+            MultiConversationsSelect, OverflowMenu, RadioButtons, StaticSelectMenu, ChannelsSelectMenu,
+            ConversationsSelectMenu, UsersSelectMenu
+        ]
+        for element in compatible_elements:
+            if not isinstance(type(accessory), element):
+                raise IncorrectTypeError(self, method="add_accessory", compatible_types=compatible_elements, incompatible_type=accessory)
+        self.accessory = accessory
+        return self
 
     def build_to_json(self):
         # raise error if neither text nor fields are set
-        if not any([self._fields, self._text]):
-            raise RequiredFieldError(self, ["text", "fields"])
+        if not any([self.fields, self.text]):
+            raise RequiredFieldError(self, missing_field_names=["text", "fields"])
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data = {
-            "type": self._type,
+            "type": self.type,
         }
-        if self._text:
-            data["text"] = json.loads(self._text.build_to_json())
-        if self._block_id:
-            data["block_id"] = self._block_id
-        if self._fields:
-            data["fields"] = [json.loads(text_obj.build_to_json()) for text_obj in self._fields]
-        if self._accessory:
-            data["accessory"] = json.loads(self._accessory.build_to_json())
+        if self.text:
+            data["text"] = json.loads(self.text.build_to_json())
+        if self.block_id:
+            data["block_id"] = self.block_id
+        if self.fields:
+            data["fields"] = [json.loads(text_obj.build_to_json()) for text_obj in self.fields]
+        if self.accessory:
+            data["accessory"] = json.loads(self.accessory.build_to_json())
 
         return json.dumps(data)
-
 
 # class Section:
 #     """

@@ -3,65 +3,64 @@ if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
-from _errors import FieldLengthError, RequiredFieldError
+from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError
 from pyblock_builder.objects.text import Text, PlainText, MrkdwnText
 
 
 @dataclass
 class Option:
-    _text: Text | None = None
-    _value: str | None = None
-    _description: Text | None = None
-    _url: str | None = None
+    text: Text | None = None
+    value: str | None = None
+    description: Text | None = None
+    url: str | None = None
 
     def set_text(self, text: Text) -> Self:
         if not isinstance(text, (PlainText, MrkdwnText)):
-            raise TypeError(f"text must be a PlainText or MrkdwnText object, not {type(text).__name__}")
-        if not 1 <= len(text._text) <= 75:
-            raise FieldLengthError(self, "text", min_length=1, max_length=75)
-        self._text = text
+            raise IncorrectTypeError(self, method="set_text", compatible_types=[PlainText, MrkdwnText], incompatible_type=text)
+        if not 1 <= len(text.text) <= 75:
+            raise TextLengthError(self, field="text", min_length=1, max_length=75)
+        self.text = text
         return self
 
     def set_value(self, value: str) -> Self:
         if not 1 <= len(value) <= 150:
-            raise FieldLengthError(self, "value", min_length=1, max_length=150)
-        self._value = value
+            raise TextLengthError(self, field="value", min_length=1, max_length=150)
+        self.value = value
         return self
 
     def set_url(self, target_url: str) -> Self:
         if not 1 <= len(target_url) <= 3000:
-            raise FieldLengthError(self, "url", min_length=1, max_length=3000)
-        self._url = target_url
+            raise TextLengthError(self, field="url", min_length=1, max_length=3000)
+        self.url = target_url
         return self
 
     def set_description(self, descriptive_text: Text) -> Self:
         if not isinstance(descriptive_text, (PlainText, MrkdwnText)):
-            raise TypeError(f"text must be a PlainText or MrkdwnText object, not {type(descriptive_text).__name__}")
-        if not 1 <= len(descriptive_text._text) <= 75:
-            raise FieldLengthError(self, "description", min_length=1, max_length=75)
-        self._description = descriptive_text
+            raise IncorrectTypeError(self, method="set_description", compatible_types=[PlainText, MrkdwnText], incompatible_type=descriptive_text)
+        if not 1 <= len(descriptive_text.text) <= 75:
+            raise TextLengthError(self, field="description", min_length=1, max_length=75)
+        self.description = descriptive_text
         return self
 
     def build_to_json(self) -> str:
-        if self._text is None:
-            raise RequiredFieldError(self, "text")
-        if self._value is None:
-            raise RequiredFieldError(self, "value")
+        if self.text is None:
+            raise RequiredFieldError(self, missing_field_names="text")
+        if self.value is None:
+            raise RequiredFieldError(self, missing_field_names="value")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data = {
-            "text": json.loads(self._text.build_to_json()),
-            "value": self._value
+            "text": json.loads(self.text.build_to_json()),
+            "value": self.value
         }
-        if self._description:
-            data["description"] = json.loads(self._description.build_to_json())
-        if self._url:
-            data["url"] = self._url
+        if self.description:
+            data["description"] = json.loads(self.description.build_to_json())
+        if self.url:
+            data["url"] = self.url
 
         return json.dumps(data)
 
-#
 # class Option:
 #     """
 #     A Python class representing an Option object from the Slack BlockKit UI framework

@@ -4,7 +4,7 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import Self
 
-class ImageElement:
+class Image:
     """
     A Python class representing an Image element from the Slack BlockKit UI framework\n
     Can be added to: Section, Context

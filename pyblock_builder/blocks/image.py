@@ -3,7 +3,7 @@ if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-from pyblock_builder.objects.text import Text
+from pyblock_builder.objects import Text
 
 
 class Image:
