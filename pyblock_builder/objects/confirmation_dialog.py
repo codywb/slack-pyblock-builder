@@ -12,13 +12,21 @@ from pyblock_builder.objects.text import PlainText
 
 @dataclass
 class ConfirmationDialog:
+    """
+    Defines a dialog that adds a confirmation step to interactive elements.
+    """
     title: PlainText | None = None
     text: PlainText | None = None
     confirm_label: PlainText | None = None
     deny_label: PlainText | None = None
-    style: str | None = None
+    style: Literal["danger", "primary"] | None = None
 
     def set_title(self, title_text: PlainText) -> Self:
+        """
+        Sets the title text for the Confirmation dialog
+        :param title_text: String; max 100 chars
+        :return: self
+        """
         if not isinstance(title_text, PlainText):
             raise IncorrectTypeError(self, method="set_title", compatible_types=PlainText, incompatible_type=title_text)
         if not 1 <= len(title_text.text) <= 100:
@@ -27,6 +35,11 @@ class ConfirmationDialog:
         return self
 
     def set_text(self, text: PlainText) -> Self:
+        """
+        Sets the explanatory text that appears in the Confirmation dialog
+        :param text: String; max 300 chars
+        :return: self
+        """
         if not isinstance(text, PlainText):
             raise IncorrectTypeError(self, method="set_text", compatible_types=PlainText, incompatible_type=text)
         if not 1 <= len(text.text) <= 300:
@@ -35,6 +48,11 @@ class ConfirmationDialog:
         return self
 
     def set_confirm_label(self, label_text: PlainText) -> Self:
+        """
+        Sets the label for the button that confirms the action
+        :param label_text: String; max 30 chars
+        :return: self
+        """
         if not isinstance(label_text, PlainText):
             raise IncorrectTypeError(self, method="set_confirm_label", compatible_types=PlainText, incompatible_type=label_text)
         if not 1 <= len(label_text.text) <= 30:
@@ -43,6 +61,11 @@ class ConfirmationDialog:
         return self
 
     def set_deny_label(self, label_text: PlainText) -> Self:
+        """
+        Sets the label for the button that cancels the action
+        :param label_text: String; max 30 chars
+        :return: self
+        """
         if not isinstance(label_text, PlainText):
             raise IncorrectTypeError(self, method="set_deny_label", compatible_types=PlainText, incompatible_type=label_text)
         if not 1 <= len(label_text.text) <= 30:
@@ -51,6 +74,12 @@ class ConfirmationDialog:
         return self
 
     def set_style(self, style: Literal["danger", "primary"]) -> Self:
+        """
+        (Optional) Sets the style for the button to decorate with alternative visual color schemes. If unset, defaults
+        to "primary".
+        :param style: String; "primary" gives a green outline and text, "danger" gives a red outline and text
+        :return: self
+        """
         if style not in ("danger", "primary"):
             raise IncorrectValueError(self, method="set_style", acceptable_values=["danger", "primary"], unacceptable_value=style)
         self.style = style
@@ -71,90 +100,3 @@ class ConfirmationDialog:
             data["style"] = self.style
 
         return json.dumps(data)
-
-# class ConfirmationDialog:
-#     """
-#     A Python class representing a Confirmation dialog object from the Slack BlockKit UI framework\n
-#     """
-#
-#     def __init__(self):
-#         self._title = {}
-#         self._text = {}
-#         self._confirm_text = {}
-#         self._deny_text = {}
-#         self._style = None
-#         self.json = {
-#             "title": self._title,
-#             "text": self._text,
-#             "confirm": self._confirm_text,
-#             "deny": self._deny_text
-#         }
-#
-#     def set_title(self, title_text: str) -> Self:
-#         """
-#         Sets the title text for the Confirmation dialog
-#         :param title_text: String; max 100 chars
-#         :return: self
-#         """
-#         self._title = Text().set_text(title_text)
-#         self.json["title"] = self._title.json
-#         return self
-#
-#     def set_text(self, text: str) -> Self:
-#         """
-#         Sets the explanatory text that appears in the Confirmation dialog
-#         :param text: String; max 300 chars
-#         :return: self
-#         """
-#         self._text = Text().set_text(text)
-#         self.json["text"]= self._text.json
-#         return self
-#
-#     def set_confirm_label(self, label_text: str) -> Self:
-#         """
-#         Sets the label for the button that confirms the action
-#         :param label_text: String; max 30 chars
-#         :return: self
-#         """
-#         self._confirm_text = Text().set_text(label_text)
-#         self.json["confirm"]= self._confirm_text.json
-#         return self
-#
-#     def set_deny_label(self, label_text: str) -> Self:
-#         """
-#         Sets the label for the button that cancels the action
-#         :param label_text: String; max 30 chars
-#         :return: self
-#         """
-#         self._deny_text = Text().set_text(label_text)
-#         self.json["deny"] = self._deny_text.json
-#         return self
-#
-#     def set_style(self, style: str) -> Self:
-#         """
-#         (Optional) Sets the style for the button to decorate with alternative visual color schemes. If unset, defaults
-#         to "primary".
-#         :param style: String; "primary" gives a green outline and text, "danger" gives a red outline and text
-#         :return: self
-#         """
-#         self._style = style
-#         self.json["style"] = self._style
-#         return self
-#
-#     def primary(self) -> Self:
-#         """
-#         (Optional) Sets the style of the button to "primary", decorating it with a green background.
-#         :return: self
-#         """
-#         self._style = "primary"
-#         self.json["style"] = self._style
-#         return self
-#
-#     def danger(self) -> Self:
-#         """
-#         (Optional) Sets the style of the button to "danger", decorating it with a red background.
-#         :return: self
-#         """
-#         self._style = "danger"
-#         self.json["style"] = self._style
-#         return self

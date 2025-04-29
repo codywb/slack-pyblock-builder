@@ -1,6 +1,6 @@
 import sys
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, Sequence
 else:
     from typing_extensions import Self
 from dataclasses import dataclass, field
@@ -11,10 +11,18 @@ from pyblock_builder.objects.option import Option
 
 @dataclass
 class OptionGroup:
+    """
+    Defines a way to group options in a select menu or a multi-select menu.
+    """
     label: Text | None = None
     options: list[Option] = field(default_factory=list)
 
     def set_label(self, label_text: Text) -> Self:
+        """
+        Sets the label to be displayed above the group of Options
+        :param label_text: String; max 75 chars
+        :return: self
+        """
         if not isinstance(label_text, (PlainText, MrkdwnText)):
             raise IncorrectTypeError(self, method="set_label", compatible_types=[PlainText, MrkdwnText], incompatible_type=label_text)
         if not 1 <= len(label_text.text) <= 75:
@@ -22,10 +30,23 @@ class OptionGroup:
         self.label = label_text
         return self
 
-    def set_options(self, *options: Option) -> Self:
-        if not 1 <= len(options) <= 100:
+    def set_options(self, *options: Option | Sequence[Option]) -> Self:
+        """
+       Sets the options belonging to this specific group
+       :param options: One or more Option objects, or a list/tuple of Option objects; maximum of 100 items
+       :return: self
+       """
+        flattened_options = []
+        for opt in options:
+            if isinstance(opt, (list, tuple)):
+                flattened_options.extend(opt)
+            else:
+                flattened_options.append(opt)
+
+        if not 1 <= len(flattened_options) <= 100:
             raise ItemLengthError(self, field="options", min_length=1, max_length=100)
-        for option in options:
+
+        for option in flattened_options:
             if not isinstance(option, Option):
                 raise IncorrectTypeError(self, method="set_options", compatible_types=Option, incompatible_type=option)
             self.options.append(option)
@@ -43,36 +64,3 @@ class OptionGroup:
         }
 
         return json.dumps(data)
-
-# class OptionGroup:
-#     """
-#     A Python class representing an Option Group object from the Slack BlockKit UI framework
-#     """
-#     def __init__(self):
-#         self._label = {}
-#         self._options = []
-#         self.json = {
-#             "label": self._label,
-#             "options": self._options
-#         }
-#
-#     def set_label(self, label_text: str) -> Self:
-#         """
-#         Sets the label to be displayed above the group of Options
-#         :param label_text: String; max 75 chars
-#         :return: self
-#         """
-#         self._label = Text().set_text(label_text)
-#         self.json["label"] = self._label.json
-#         return self
-#
-#     def set_options(self, *options) -> Self:
-#         """
-#         Sets the options belonging to this specific group
-#         :param options: One or more Option objects; maximum of 100 items; preface with * if passing in a list
-#         :return: self
-#         """
-#         for option in options:
-#             self._options.append(option.json)
-#         self.json["options"] = self._options
-#         return self

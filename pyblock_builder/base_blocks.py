@@ -6,23 +6,23 @@ class Buiildable(Protocol):
 
 
 class Block(Protocol):
-    _type: str| None
-    _block_id: str| None
+    type: str| None
+    block_id: str| None
 
     def build_to_json(self):
         pass
 
 
 class Element(Protocol):
-    _type: str| None
-    _action_id: str| None
+    type: str| None
+    action_id: str| None
 
     def build_to_json(self):
         pass
 
 
 class Surface(Protocol):
-    _blocks: List[Block] | None
+    blocks: List[Block] | None
 
     def add_blocks(self, *blocks: List[Block]):
         pass

@@ -49,7 +49,7 @@ class IncorrectTypeError(Exception):
         return (
             f"Incompatible type passed as argument to the '{self.method}' method of {self.obj.__class__.__name__}:\n"
             f"Received: {incompatible_type_name}\n"
-            f"Expected one of:\n- {compatible_types_str}"
+            f"Expected one of:\n{compatible_types_str}"
         )
 
 @dataclass

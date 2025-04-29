@@ -4,3 +4,4 @@ from .text import Text, PlainText, MrkdwnText
 from .confirmation_dialog import ConfirmationDialog
 from .conversations_filter import ConversationsFilter
 from .dispatch_action_configuration import DispatchActionConfig
+from .slack_file import SlackFile

@@ -1,6 +1,6 @@
 from .plain_text_input import PlainTextInput
 from .date_picker import DatePicker
-from .datetime_picker import DatetimePicker
+from .datetime_picker import DateTimePicker
 from .select_menu import StaticSelectMenu, ConversationsSelectMenu, ChannelsSelectMenu, UsersSelectMenu
 from .multiselect_menu import MultiStaticSelect, MultiConversationsSelect, MultiChannelsSelect, MultiUsersSelect
 from .button import Button
