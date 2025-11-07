@@ -41,3 +41,14 @@ class DispatchActionConfig:
             data["trigger_actions_on"] = self.trigger_actions_on
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a DispatchActionConfig instance from its JSON representation
+        :param json: a JSON representation of a DispatchActionConfig object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.trigger_actions_on = json["trigger_actions_on"]
+        return self

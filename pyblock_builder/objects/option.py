@@ -5,7 +5,7 @@ else:
     from typing_extensions import Self, Any
 from dataclasses import dataclass
 import json
-from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError, RequiredFieldsError
+from pyblock_builder._internal.errors import TextLengthError, IncorrectTypeError, RequiredFieldsError
 from pyblock_builder.objects.text import Text, PlainText, MrkdwnText
 
 
@@ -14,12 +14,12 @@ class Option:
     """
     Defines a single item in a number of item selection elements.
     """
-    text: Text | None = None
+    text: PlainText | MrkdwnText | None = None
     value: str | None = None
-    description: Text | None = None
+    description: PlainText | MrkdwnText | None = None
     url: str | None = None
 
-    def set_text(self, text: Text) -> Self:
+    def set_text(self, text: PlainText | MrkdwnText) -> Self:
         """
         Sets the text shown in the option on the menu
         :param text: String, max 75 chars
@@ -54,10 +54,10 @@ class Option:
         self.url = target_url
         return self
 
-    def set_description(self, descriptive_text: Text) -> Self:
+    def set_description(self, descriptive_text: PlainText | MrkdwnText) -> Self:
         """
         (Optional) Sets the text to be shown below the Option's text beside a radio button
-        :param descriptive_text: String; max 75 chars
+        :param descriptive_text: PlainText or MrkdwnText object; max 75 chars
         :return: self
         """
         if not isinstance(descriptive_text, (PlainText, MrkdwnText)):
@@ -82,3 +82,25 @@ class Option:
             data["url"] = self.url
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Option instance from its JSON representation
+        :param json: a JSON representation of a Option object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if json["text"]["type"] == "plain_text":
+            self.text = PlainText().build_from_json(json["text"])
+        else:
+            self.text = MrkdwnText().build_from_json(json["text"])
+        self.value = json["value"]
+        if "url" in json.keys() and json["url"] is not None:
+            self.url = json["url"]
+        if "description" in json.keys() and json["url"] is not None:
+            if json["description"]["type"] == "plain_text":
+                self.description = PlainText().build_from_json(json["description"])
+            else:
+                self.description = MrkdwnText().build_from_json(json["description"])
+        return self

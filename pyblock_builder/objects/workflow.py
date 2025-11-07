@@ -37,3 +37,14 @@ class Workflow:
         }
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Workflow instance from its JSON representation
+        :param json: a JSON representation of a Workflow object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.trigger = Trigger().build_from_json(json["trigger"])
+        return self

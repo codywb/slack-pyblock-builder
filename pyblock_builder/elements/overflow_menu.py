@@ -7,7 +7,7 @@ else:
 from dataclasses import dataclass, field
 import json
 from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError)
-from pyblock_builder.objects import ConfirmationDialog, Option
+from pyblock_builder.objects import ConfirmationDialog, Option, PlainText
 
 
 @dataclass
@@ -54,6 +54,9 @@ class OverflowMenu:
         for option in flattened_options:
             if not isinstance(option, Option):
                 raise IncorrectTypeError(self, method="set_options", compatible_types=Option, incompatible_type=option)
+            if not isinstance(option.text, PlainText):
+                raise TypeError("One or more Option objects include MrkdwnText objects. OverflowMenu elements can only "
+                                "include Option objects comprising PlainText objects.")
             self.options.append(option)
         return self
 

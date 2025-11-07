@@ -36,6 +36,17 @@ class RichTextBroadcast:
         # return JSON representation of object using only non-empty fields and removing leading underscores
         return json.dumps({k.replace("_", ""): v for k, v in asdict(self).items() if v is not None})
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextBroadcast instance from its JSON representation
+        :param json: a JSON representation of a RichTextBroadcast object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.range = json["range"]
+        return self
+
 @dataclass
 class RichTextColor:
     """
@@ -62,6 +73,17 @@ class RichTextColor:
             raise RequiredFieldError(self, missing_field_names="value")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         return json.dumps({k.replace("_", ""): v for k, v in asdict(self).items() if v is not None})
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextColor instance from its JSON representation
+        :param json: a JSON representation of a RichTextColor object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.value = json["value"]
+        return self
 
 @dataclass
 class RichTextChannel:
@@ -184,6 +206,19 @@ class RichTextChannel:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextChannel instance from its JSON representation
+        :param json: a JSON representation of a RichTextChannel object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.channel_id = json["channel_id"]
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        return self
+
 @dataclass
 class RichTextDate:
     """
@@ -272,6 +307,22 @@ class RichTextDate:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextDate instance from its JSON representation
+        :param json: a JSON representation of a RichTextDate object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.timestamp = json["timestamp"]
+        self.format = json["format"]
+        if "url" in json.keys() and json["url"] is not None:
+            self.url = json["url"]
+        if "fallback" in json.keys() and json["fallback"] is not None:
+            self.fallback = json["fallback"]
+        return self
+
 @dataclass
 class RichTextEmoji:
     """
@@ -318,6 +369,19 @@ class RichTextEmoji:
             data["unicode"] = self.unicode
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextEmoji instance from its JSON representation
+        :param json: a JSON representation of a RichTextEmoji object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.name = json["name"]
+        if "unicode" in json.keys() and json["unicode"] is not None:
+            self.unicode = json["unicode"]
+        return self
 
 @dataclass
 class RichTextLink:
@@ -446,6 +510,23 @@ class RichTextLink:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextLink instance from its JSON representation
+        :param json: a JSON representation of a RichTextLink object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.url = json["url"]
+        if "text" in json.keys() and json["text"] is not None:
+            self.text = json["text"]
+        if "unsafe" in json.keys() and json["unsafe"] is not None:
+            self.unsafe = json["unsafe"]
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        return self
+
 @dataclass
 class RichTextText:
     """
@@ -546,6 +627,19 @@ class RichTextText:
             data["style"] = self.style
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextText instance from its JSON representation
+        :param json: a JSON representation of a RichTextText object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.text = json["text"]
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        return self
 
 @dataclass
 class RichTextUser:
@@ -671,12 +765,25 @@ class RichTextUser:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextUser instance from its JSON representation
+        :param json: a JSON representation of a RichTextUser object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.user_id = json["user_id"]
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        return self
+
 @dataclass
 class RichTextUserGroup:
     """
     Defines a rich text element usergroup object
     """
-    type: Literal["user"] = "user"
+    type: Literal["usergroup"] = "usergroup"
     usergroup_id: str | None = None
     style: dict[Literal["bold", "italic", "strike", "highlight", "client_highlight", "unlink"], bool] | None = None
 
@@ -794,6 +901,19 @@ class RichTextUserGroup:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextUserGroup instance from its JSON representation
+        :param json: a JSON representation of a RichTextUserGroup object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.usergroup_id = json["usergroup_id"]
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        return self
+
 @dataclass
 class RichTextSection:
     """
@@ -834,6 +954,28 @@ class RichTextSection:
         }
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextSection instance from its JSON representation
+        :param json: a JSON representation of a RichTextSection object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        compatible_types = {
+            "broadcast": RichTextBroadcast,
+            "color": RichTextColor,
+            "channel": RichTextChannel,
+            "dats": RichTextDate,
+            "emoji": RichTextEmoji,
+            "text": RichTextText,
+            "link": RichTextLink,
+            "user": RichTextUser,
+            "usergroup": RichTextUserGroup
+        }
+        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
+        return self
 
 @dataclass
 class RichTextList:
@@ -934,6 +1076,24 @@ class RichTextList:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextList instance from its JSON representation
+        :param json: a JSON representation of a RichTextList object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.style = json["style"]
+        self.elements = [RichTextSection().build_from_json(element) for element in json["elements"]]
+        if "indent" in json.keys() and json["indent"] is not None:
+            self.indent = json["indent"]
+        if "offset" in json.keys() and json["offset"] is not None:
+            self.offset = json["offset"]
+        if "border" in json.keys() and json["border"] is not None:
+            self.border = json["border"]
+        return self
+
 @dataclass
 class RichTextPreformatted:
     """
@@ -990,6 +1150,30 @@ class RichTextPreformatted:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextPreformatted instance from its JSON representation
+        :param json: a JSON representation of a RichTextPreformatted object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        compatible_types = {
+            "broadcast": RichTextBroadcast,
+            "color": RichTextColor,
+            "channel": RichTextChannel,
+            "dats": RichTextDate,
+            "emoji": RichTextEmoji,
+            "text": RichTextText,
+            "link": RichTextLink,
+            "user": RichTextUser,
+            "usergroup": RichTextUserGroup
+        }
+        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
+        if "border" in json.keys() and json["border"] is not None:
+            self.border = json["border"]
+        return self
+
 @dataclass
 class RichTextQuote:
     """
@@ -1045,3 +1229,27 @@ class RichTextQuote:
             data["border"] = self.border
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RichTextQuote instance from its JSON representation
+        :param json: a JSON representation of a RichTextQuote object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        compatible_types = {
+            "broadcast": RichTextBroadcast,
+            "color": RichTextColor,
+            "channel": RichTextChannel,
+            "dats": RichTextDate,
+            "emoji": RichTextEmoji,
+            "text": RichTextText,
+            "link": RichTextLink,
+            "user": RichTextUser,
+            "usergroup": RichTextUserGroup
+        }
+        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
+        if "border" in json.keys() and json["border"] is not None:
+            self.border = json["border"]
+        return self

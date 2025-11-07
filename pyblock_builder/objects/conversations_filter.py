@@ -1,7 +1,7 @@
 import sys
 
 if sys.version_info >= (3, 11):
-    from typing import Self, Any
+    from typing import Self, Any, Literal
 else:
     from typing_extensions import Self, Any
 from dataclasses import dataclass
@@ -18,7 +18,7 @@ class ConversationsFilter:
     exclude_external: bool = False
     exclude_bots : bool = False
 
-    def include(self, conversations: list[str]) -> Self:
+    def include(self, conversations: list[Literal["im", "mpim", "private", "public"]]) -> Self:
         """
         (Optional) Sets which type of conversations should be included in the list. When provided, any matching
         conversations will be excluded.
@@ -52,7 +52,7 @@ class ConversationsFilter:
 
     def build_to_json(self) -> str:
         # raise error if at least one field is not set
-        if not self.included_conversations:
+        if not any([self.included_conversations, self.exclude_bots, self.exclude_external]):
             raise RequiredFieldError(self, missing_field_names="included_conversations")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
@@ -63,3 +63,19 @@ class ConversationsFilter:
             data["include"] = self.included_conversations
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ConversationsFilter instance from its JSON representation
+        :param json: a JSON representation of a ConversationsFilter object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "include" in json.keys() and json["include"] is not None:
+            self.included_conversations = json["include"]
+        if "exclude_external_shared_channels" in json.keys() and json["exclude_external_shared_channels"] is not None:
+            self.exclude_external = json["exclude_external_shared_channels"]
+        if "exclude_bot_users" in json.keys() and json["exclude_bot_users"] is not None:
+            self.exclude_bots = json["exclude_bot_users"]
+        return self

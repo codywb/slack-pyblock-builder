@@ -14,17 +14,17 @@ class OptionGroup:
     """
     Defines a way to group options in a select menu or a multi-select menu.
     """
-    label: Text | None = None
+    label: PlainText | None = None
     options: list[Option] = field(default_factory=list)
 
-    def set_label(self, label_text: Text) -> Self:
+    def set_label(self, label_text: PlainText) -> Self:
         """
         Sets the label to be displayed above the group of Options
-        :param label_text: String; max 75 chars
+        :param label_text: PlainText object; max 75 chars
         :return: self
         """
-        if not isinstance(label_text, (PlainText, MrkdwnText)):
-            raise IncorrectTypeError(self, method="set_label", compatible_types=[PlainText, MrkdwnText], incompatible_type=label_text)
+        if not isinstance(label_text, PlainText):
+            raise IncorrectTypeError(self, method="set_label", compatible_types=PlainText, incompatible_type=label_text)
         if not 1 <= len(label_text.text) <= 75:
             raise TextLengthError(self, field="label_text", min_length=1, max_length=75)
         self.label = label_text
@@ -63,3 +63,15 @@ class OptionGroup:
         }
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a class OptionGroup instance from its JSON representation
+        :param json: a JSON representation of a OptionGroup object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.label = PlainText().build_from_json(json["label"])
+        self.options = [Option().build_from_json(option) for option in json["options"]]
+        return self

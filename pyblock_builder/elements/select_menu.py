@@ -118,6 +118,14 @@ class StaticSelectMenu(SelectMenu):
         for option in flattened_options:
             if not isinstance(option, Option):
                 raise IncorrectTypeError(self, method="set_options", compatible_types=Option, incompatible_type=option)
+            if not isinstance(option.text, PlainText):
+                raise TypeError("One or more Option objects include MrkdwnText objects in the 'text' field. SelectMenu "
+                                "elements can only include Option objects comprising PlainText objects.")
+            if option.description:
+                if not isinstance(option.description, PlainText):
+                    raise TypeError(
+                        "One or more Option objects include MrkdwnText objects in the 'description' field. SelectMenu "
+                        "elements can only include Option objects comprising PlainText objects.")
             self.options.append(option)
         return self
 
@@ -141,6 +149,16 @@ class StaticSelectMenu(SelectMenu):
             if not isinstance(option_group, OptionGroup):
                 raise IncorrectTypeError(self, method="set_option_groups", compatible_types=OptionGroup,
                                          incompatible_type=option_group)
+            for option in option_group.options:
+                if not isinstance(option.text, PlainText):
+                    raise TypeError(
+                        "One or more Option objects include MrkdwnText objects in the 'text' field. SelectMenu "
+                        "elements can only include Option objects comprising PlainText objects.")
+                if option.description:
+                    if not isinstance(option.description, PlainText):
+                        raise TypeError(
+                            "One or more Option objects include MrkdwnText objects in the 'description' field. SelectMenu "
+                            "elements can only include Option objects comprising PlainText objects.")
             self.option_groups.append(option_group)
         return self
 
@@ -148,12 +166,20 @@ class StaticSelectMenu(SelectMenu):
         """
         (Optional) Sets the option that will be initially selected when the menu loads. Must exactly
         match one of the options within self.options.
-        :param option: An Option objects
+        :param option: An Option object
         :return: self
         """
         if not isinstance(option, Option):
             raise IncorrectTypeError(self, method="set_initial_option", compatible_types=Option,
                                      incompatible_type=option)
+        if not isinstance(option.text, PlainText):
+            raise TypeError("One or more Option objects include MrkdwnText objects. SelectMenu elements can only "
+                            "include Option objects comprising PlainText objects.")
+        if option.description:
+            if not isinstance(option.description, PlainText):
+                raise TypeError(
+                    "One or more Option objects include MrkdwnText objects in the 'description' field. SelectMenu "
+                    "elements can only include Option objects comprising PlainText objects.")
         self.initial_option = option
         return self
 
@@ -206,6 +232,14 @@ class ExternalSelectMenu(SelectMenu):
         if not isinstance(option, Option):
             raise IncorrectTypeError(self, method="set_initial_option", compatible_types=Option,
                                      incompatible_type=option)
+        if not isinstance(option.text, PlainText):
+            raise TypeError("One or more Option objects include MrkdwnText objects. SelectMenu elements can only "
+                            "include Option objects comprising PlainText objects.")
+        if option.description:
+            if not isinstance(option.description, PlainText):
+                raise TypeError(
+                    "One or more Option objects include MrkdwnText objects in the 'description' field. SelectMenu "
+                    "elements can only include Option objects comprising PlainText objects.")
         self.initial_option = option
         return self
 

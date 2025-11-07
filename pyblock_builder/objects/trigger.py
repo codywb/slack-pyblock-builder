@@ -50,3 +50,17 @@ class Trigger:
             data["customizable_input_parameters"] = self.customizable_input_parameters
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Trigger instance from its JSON representation
+        :param json: a JSON representation of a Trigger object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "url" in json.keys() and json["url"] is not None:
+            self.url = json["url"]
+        if "customizable_input_parameters" in json.keys() and json["customizable_input_parameters"] is not None:
+            self.customizable_input_parameters = json["customizable_input_parameters"]
+        return self
