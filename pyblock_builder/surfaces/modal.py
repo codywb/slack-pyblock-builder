@@ -1,10 +1,22 @@
 import sys
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-from pyblock_builder.objects.text import Text
 
+if sys.version_info >= (3, 11):
+    from typing import Self, Literal, Any, Sequence
+else:
+    from typing_extensions import Self, Literal, Any, Sequence
+from dataclasses import dataclass, field
+import json
+from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError)
+from pyblock_builder.base_blocks import Block
+
+@dataclass
+class Modal:
+    """
+    Modal view objects are used within the following Web API methods: views.open, views.update, views.push.
+    Non-standard characters (including characters with diacritics) within view objects are converted and sent in
+    unicode format when you receive the view callback payloads.
+    """
+    type: Literal["modal"] = "modal"
 
 class Modal:
     """

@@ -6,26 +6,25 @@ else:
     from typing_extensions import Self, Literal, Any
 from dataclasses import dataclass
 import json
-from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError,
-                                              IncorrectValueError)
-from pyblock_builder.objects import PlainText, ConfirmationDialog, MrkdwnText
-
+from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldsError, IncorrectTypeError)
+from pyblock_builder.objects.text import PlainText
+from pyblock_builder.objects import ConfirmationDialog
 
 @dataclass
-class Button:
+class IconButton:
     """
-    Allows users a direct path to performing basic actions.\n
-    Can be added to: Section, Actions\n
-    Works on: Modal, Message, AppHome
+    Defines an icon button to perform actions.\n
+    Can be added to: ContextActions\n
+    Works on: Message
     """
-    type: Literal["button"] = "button"
-    action_id: str | None = None
+    type: Literal["icon_button"] = "icon_button"
+    icon: str | None = None
     text: PlainText | None = None
-    url: str | None = None
+    action_id: str | None = None
     value: str | None = None
-    style: Literal["danger", "primary"] | None = None
     confirm: ConfirmationDialog | None = None
     accessibility_label: str | None = None
+    visible_to_user_ids: list[str] | None = None
 
     def set_action_id(self, action_id: str) -> Self:
         """
@@ -66,34 +65,16 @@ class Button:
         self.value = value
         return  self
 
-    def set_url(self, url: str) -> Self:
+    def set_icon(self, icon: str) -> Self:
         """
-        (Optional) Sets the url to be opened when a user clicks the button
-        :param target_url: String; max 3,000 chars, still requires an ack() response to the Slack API
+        Sets the name of the icon to display on the button
+        :param icon: String; e.g. "trash"
         :return: self
         """
-        if not isinstance(url, str):
-            raise IncorrectTypeError(self, method="set_url", compatible_types=str, incompatible_type=url)
-        if not 1 <= len(url) <= 3000:
-            raise TextLengthError(self, field="url", min_length=1, max_length=3000)
-        self.url = url
+        if not isinstance(icon, str):
+            raise IncorrectTypeError(self, method="set_icon", compatible_types=str, incompatible_type=icon)
+        self.icon = icon
         return  self
-
-    def set_style(self, style: Literal["danger", "primary"]) -> Self:
-        """
-        (Optional) Sets the style for the button to decorate with alternative visual color schemes. Can alternatively be
-        set using the primary() and danger() methods.
-        :param style: String; "primary" gives a green outline and text, "danger" gives a red outline and text
-        :return: self
-        """
-        if not isinstance(style, str):
-            raise IncorrectTypeError(self, method="set_style", compatible_types=str,
-                                     incompatible_type=style)
-        if style not in ("danger", "primary"):
-            raise IncorrectValueError(self, method="set_style", acceptable_values=["danger", "primary"],
-                                      unacceptable_value=style)
-        self.style = style
-        return self
 
     def set_confirm_dialog(self, confirm_dialog: ConfirmationDialog) -> Self:
         """
@@ -121,49 +102,40 @@ class Button:
         self.accessibility_label = label_text
         return  self
 
+    def visible_to(self, user_ids: list[str] | str) -> Self:
+        """
+        Specifies the ids of users to whom the icon button is visible. If not used, the button is visible to all users.
+        :param user_ids: List of valid public Slack user IDs as strings
+        :return: self
+        """
+        if not isinstance(user_ids, list):
+            raise IncorrectTypeError(self, method="visible_to", compatible_types=list[str], incompatible_type=user_ids)
+        if isinstance(user_ids, list):
+            for user_id in user_ids:
+                if not isinstance(user_id, str):
+                    raise TypeError("Non-string value included in user_ids list passed as argument to the 'visible_to' method of IconButton")
+        self.visible_to_user_ids = user_ids
+        return self
+
     def build_to_json(self) -> str:
         # raise error if required fields are not set
-        if not self.text:
-            raise RequiredFieldError(self, missing_field_names="text")
+        if any([field is None for field in [self.text, self.icon]]):
+            raise RequiredFieldsError(self, missing_field_names=["text", "icon"])
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
             "type": self.type,
             "text": json.loads(self.text.build_to_json()),
+            "icon": self.icon
         }
         if self.action_id:
             data["action_id"] = self.action_id
-        if self.url:
-            data["url"] = self.url
+        if self.visible_to_user_ids:
+            data["visible_to_user_ids"] = self.visible_to_user_ids
         if self.value:
             data["value"] = self.value
         if self.confirm:
             data["confirm"] = json.loads(self.confirm.build_to_json())
-        if self.style:
-            data["style"] = self.style
         if self.accessibility_label:
             data["accessibility_label"] = self.accessibility_label
 
         return json.dumps(data)
-
-    def build_from_json(self, json: dict[str, Any]) -> Self:
-        """
-        Generates a Button instance from its JSON representation
-        :param json: a JSON representation of a Button element, e.g. from the 'elements' property of a Slack API interaction payload
-        :return: self
-        """
-        if not isinstance(json, dict):
-            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.text = PlainText().build_from_json(json["text"])
-        if "action_id" in json.keys() and json["action_id"] is not None:
-            self.action_id = json["action_id"]
-        if "url" in json.keys() and json["url"] is not None:
-            self.url = json["url"]
-        if "style" in json.keys() and json["style"] is not None:
-            self.style = json["style"]
-        if "accessibility_label" in json.keys() and json["accessibility_label"] is not None:
-            self.accessibility_label = json["accessibility_label"]
-        if "value" in json.keys() and json["value"] is not None:
-            self.value = json["value"]
-        if "confirm" in json.keys() and json["confirm"] is not None:
-            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
-        return self

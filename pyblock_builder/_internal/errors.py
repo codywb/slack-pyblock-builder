@@ -11,8 +11,20 @@ class TextLengthError(Exception):
     __module__: str = "errors"  # 👈 Fake module name for traceback display
 
     def __str__(self):
-        return (f"'{self.field}' field for {self.obj.__class__.__name__} object must be between {self.min_length} and "
+        return (f"'{self.field}' field of {self.obj.__class__.__name__} object must be between {self.min_length} and "
                 f"{self.max_length} characters")
+
+@dataclass
+class ValueLengthError(Exception):
+    obj: Buiildable
+    field: str
+    min_length: int
+    max_length: int
+    __module__: str = "errors"  # 👈 Fake module name for traceback display
+
+    def __str__(self):
+        return (f"'{self.field}' field of {self.obj.__class__.__name__} object must be between {self.min_length} and "
+                f"{self.max_length}")
 
 @dataclass
 class ItemLengthError(Exception):
@@ -23,7 +35,7 @@ class ItemLengthError(Exception):
     __module__: str = "errors"  # 👈 Fake module name for traceback display
 
     def __str__(self):
-        return (f"'{self.field}' field for {self.obj.__class__.__name__} object must be between {self.min_length} and "
+        return (f"'{self.field}' field of {self.obj.__class__.__name__} object must be between {self.min_length} and "
                 f"{self.max_length} items")
 
 @dataclass
@@ -40,9 +52,18 @@ class IncorrectTypeError(Exception):
 
         if isinstance(self.compatible_types, list):
             if len(self.compatible_types) > 1:
-                compatible_types_str = "\n".join(f"- {t.__name__}" for t in self.compatible_types)
+                if all([isinstance(t, str) for t in self.compatible_types]):
+                    compatible_types_str = "\n".join(f"- {t}" for t in self.compatible_types)
+                if all([isinstance(t, type) for t in self.compatible_types]):
+                    compatible_types_str = "\n".join(f"- {t.__name__}" for t in self.compatible_types)
+
+
             else:
-                compatible_types_str = self.compatible_types[0].__name__
+                if not isinstance(self.compatible_types[0], str):
+                    compatible_types_str = self.compatible_types[0].__name__
+                else:
+                    compatible_types_str = self.compatible_types[0]
+
         else:
             compatible_types_str = self.compatible_types.__name__
 

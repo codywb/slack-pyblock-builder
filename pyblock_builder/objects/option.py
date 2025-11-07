@@ -1,11 +1,11 @@
 import sys
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, Any
 else:
-    from typing_extensions import Self
-from dataclasses import dataclass, field
+    from typing_extensions import Self, Any
+from dataclasses import dataclass
 import json
-from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError
+from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError, RequiredFieldsError
 from pyblock_builder.objects.text import Text, PlainText, MrkdwnText
 
 
@@ -68,12 +68,11 @@ class Option:
         return self
 
     def build_to_json(self) -> str:
-        if self.text is None:
-            raise RequiredFieldError(self, missing_field_names="text")
-        if self.value is None:
-            raise RequiredFieldError(self, missing_field_names="value")
+        # raise error if required fields are not set
+        if any([field is None for field in [self.text, self.value]]):
+            raise RequiredFieldsError(self, missing_field_names=["text", "value"])
         # return JSON representation of object using only non-empty fields and removing leading underscores
-        data = {
+        data: dict[str, Any] = {
             "text": json.loads(self.text.build_to_json()),
             "value": self.value
         }

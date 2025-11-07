@@ -7,7 +7,7 @@ else:
 from dataclasses import dataclass
 import json
 from datetime import date, datetime
-from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError)
+from pyblock_builder._internal.errors import (TextLengthError, IncorrectTypeError)
 from pyblock_builder.objects.text import PlainText
 from pyblock_builder.objects import ConfirmationDialog
 
@@ -22,7 +22,7 @@ class DatePicker:
     action_id: str | None = None
     initial_date: str | date | datetime = None
     confirm: ConfirmationDialog | None = None
-    is_focus_on_load: bool = False
+    is_focus_on_load: bool | None = None
     placeholder: PlainText | None = None
 
     def set_action_id(self, action_id: str) -> Self:
@@ -44,6 +44,8 @@ class DatePicker:
         :param date: String in YYYY-MM-DD format or Python date/datetime object
         :return: self
         """
+        if not isinstance(initial_date, str) and not isinstance(initial_date, date) and not isinstance(initial_date, datetime):
+            raise IncorrectTypeError(self, method="set_initial_date", compatible_types=[str, date, datetime])
         if isinstance(initial_date, date) or isinstance(initial_date, datetime):
             self.initial_date = initial_date.strftime("%Y-%m-%d")
         else:
@@ -74,7 +76,7 @@ class DatePicker:
 
     def set_confirm_dialog(self, confirm_dialog: ConfirmationDialog) -> Self:
         """
-        (Optional) Adds a confirmation dialog to be displayed after one of the checkboxes is clicked
+        (Optional) Defines an optional confirmation dialog that appears after a date is selected.
         :param confirm_dialog: ConfirmationDialog object
         :return: self
         """
@@ -85,13 +87,12 @@ class DatePicker:
         return self
 
     def build_to_json(self) -> str:
-        # raise error if required fields are not set
-        if self.type is None:
-            raise RequiredFieldError(self, missing_field_names="type")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
             "type": self.type,
         }
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
         if self.placeholder:
             data["placeholder"] = json.loads(self.placeholder.build_to_json())
         if self.action_id:
@@ -100,7 +101,5 @@ class DatePicker:
             data["initial_date"] = self.initial_date
         if self.confirm:
             data["confirm"] = json.loads(self.confirm.build_to_json())
-        if self.is_focus_on_load:
-            data["focus_on_load"] = self.is_focus_on_load
 
         return json.dumps(data)

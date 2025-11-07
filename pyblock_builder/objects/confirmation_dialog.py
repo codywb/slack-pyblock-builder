@@ -1,9 +1,9 @@
 import sys
 
 if sys.version_info >= (3, 11):
-    from typing import Self, Literal
+    from typing import Self, Literal, Any
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self, Literal, Any
 from dataclasses import dataclass
 import json
 from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldsError, IncorrectTypeError,
@@ -87,10 +87,10 @@ class ConfirmationDialog:
 
     def build_to_json(self) -> str:
         # raise error if required fields are not set
-        if None in (self.title, self.text, self.confirm_label, self.deny_label):
+        if any([field is None for field in [self.title, self.text, self.confirm_label, self.deny_label]]):
             raise RequiredFieldsError(self, missing_field_names=["title", "text", "confirm_label", "deny_label"])
         # return JSON representation of object using only non-empty fields and removing leading underscores
-        data = {
+        data: dict[str, Any] = {
             "title": json.loads(self.title.build_to_json()),
             "text": json.loads(self.text.build_to_json()),
             "confirm": json.loads(self.confirm_label.build_to_json()),
@@ -100,3 +100,19 @@ class ConfirmationDialog:
             data["style"] = self.style
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ConfirmationDialog instance from its JSON representation
+        :param json: a JSON representation of a ConfirmationDialog object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.title = PlainText().build_from_json(json["title"])
+        self.text = PlainText().build_from_json(json["text"])
+        self.confirm_label = PlainText().build_from_json(json["confirm_label"])
+        self.deny_label = PlainText().build_from_json(json["deny_label"])
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        return self

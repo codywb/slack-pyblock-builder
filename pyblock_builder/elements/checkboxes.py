@@ -1,15 +1,13 @@
 import sys
 
-from pyblock_builder.objects import ConfirmationDialog
-
 if sys.version_info >= (3, 11):
-    from typing import Self, Literal, Sequence
+    from typing import Self, Literal, Sequence, Any
 else:
-    from typing_extensions import Self, Literal, Sequence
+    from typing_extensions import Self, Literal, Sequence, Any
 from dataclasses import dataclass, field
 import json
 from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError)
-from pyblock_builder.objects import Option
+from pyblock_builder.objects import Option, ConfirmationDialog
 
 @dataclass
 class Checkboxes:
@@ -23,7 +21,7 @@ class Checkboxes:
     options: list[Option] = field(default_factory=list)
     initial_options: list[Option] = field(default_factory=list)
     confirm: ConfirmationDialog | None = None
-    is_focus_on_load: bool = False
+    is_focus_on_load: bool | None = None
 
     def set_action_id(self, action_id: str) -> Self:
         """
@@ -97,13 +95,13 @@ class Checkboxes:
         self.confirm = confirm_dialog
         return self
 
-    def focus_on_load(self, focus: bool = True) -> Self:
+    def focus_on_load(self, bool=True) -> Self:
         """
         (Optional) Indicates whether the element will be set to autofocus within the View object. Only one element
         can be set to focus.
         :return: self
         """
-        self.is_focus_on_load = focus
+        self.is_focus_on_load = bool
         return self
 
     def build_to_json(self) -> str:
@@ -111,11 +109,12 @@ class Checkboxes:
         if not self.options:
             raise RequiredFieldError(self, missing_field_names="options")
         # return JSON representation of object using only non-empty fields and removing leading underscores
-        data= {
+        data: dict[str, Any] = {
             "type": self.type,
             "options": [json.loads(option.build_to_json()) for option in self.options],
-            "focus_on_load": self.is_focus_on_load,
         }
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
         if self.action_id:
             data["action_id"] = self.action_id
         if self.initial_options:

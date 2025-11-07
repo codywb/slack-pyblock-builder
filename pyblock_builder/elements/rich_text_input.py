@@ -1,27 +1,28 @@
+from __future__ import annotations
 import sys
 
 if sys.version_info >= (3, 11):
-    from typing import Self, Literal, Any
+    from typing import Self, Literal, Any, TYPE_CHECKING
 else:
-    from typing_extensions import Self, Literal, Any
+    from typing_extensions import Self, Literal, Any, TYPE_CHECKING
 from dataclasses import dataclass
 import json
-from pyblock_builder._internal.errors import (TextLengthError, IncorrectTypeError, RequiredFieldError, ValueLengthError)
+from pyblock_builder._internal.errors import (TextLengthError, IncorrectTypeError, RequiredFieldError)
 from pyblock_builder.objects import DispatchActionConfig, PlainText
+if TYPE_CHECKING:
+    from pyblock_builder.blocks import RichText
 
 @dataclass
-class PlainTextInput:
+class RichTextInput:
     """
-    Allows users to enter freeform text data into a single-line or multi-line field.
+    Allows users to enter formatted text in a WYSIWYG composer, offering the same messaging writing experience as in
+    Slack.
     Can be added to: Input
-    Works on: Modal, Message, AppHome
+    Works on: Modal, AppHome
     """
-    type: Literal["plain_text_input"] = "plain_text_input"
+    type: Literal["rich_text_input"] = "rich_text_input"
     action_id: str | None = None
-    initial_value: str | None = None
-    multiline: bool = False
-    min_length: int | None = None
-    max_length: int | None = None
+    initial_value: RichText | None = None
     dispatch_action_config: DispatchActionConfig | None = None
     is_focus_on_load: bool | None = None
     placeholder: PlainText | None = None
@@ -39,41 +40,16 @@ class PlainTextInput:
         self.action_id = action_id
         return self
 
-    def set_initial_value(self, value: str) -> Self:
+    def set_initial_value(self, value: RichText) -> Self:
         """
-        (Optional) Sets the initial value in the plain-text input when it is loaded.
-        :param value: str
+        (Optional) Sets the initial value in the rich text input when it is loaded.
+        :param value: a RichTextObject
         :return: self
         """
-        if not isinstance(value, str):
-            raise IncorrectTypeError(self, method="set_initial_value", compatible_types=str, incompatible_type=value)
+        from pyblock_builder.blocks import RichText
+        if not isinstance(value, RichText):
+            raise IncorrectTypeError(self, method="set_initial_value", compatible_types=RichText, incompatible_type=value)
         self.initial_value = value
-        return self
-
-    def set_min_length(self, min_length: int) -> Self:
-        """
-        (Optional) Sets the minimum length of input that the user must provide. If the user provides less, they will receive an error.
-        :param min_length: int; must be between 0 and 3000, inclusive
-        :return: self
-        """
-        if not isinstance(min_length, int):
-            raise IncorrectTypeError(self, method="set_min_length", compatible_types=int, incompatible_type=min_length)
-        if not 0 <= min_length <= 3000:
-            raise ValueLengthError(self, field="min_length", min_length=0, max_length=3000)
-        self.min_length = min_length
-        return self
-
-    def set_max_length(self, max_length: int) -> Self:
-        """
-        (Optional) Sets the maximum length of input that the user must provide. If the user provides more, they will receive an error.
-        :param max_length: int; must be between 1 and 3000, inclusive
-        :return: self
-        """
-        if not isinstance(max_length, int):
-            raise IncorrectTypeError(self, method="set_max_length", compatible_types=int, incompatible_type=max_length)
-        if not 1 <= max_length <= 3000:
-            raise ValueLengthError(self, field="max_length", min_length=1, max_length=3000)
-        self.max_length = max_length
         return self
 
     def set_dispatch_action_config(self, dispatch_action_config: DispatchActionConfig) -> Self:
@@ -112,18 +88,16 @@ class PlainTextInput:
         return self
 
     def build_to_json(self) -> str:
+        # raise error if required fields are not set
+        if not self.action_id:
+            raise RequiredFieldError(self, missing_field_names="action_id")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
             "type": self.type,
+            "action_id": self.action_id,
         }
-        if self.action_id:
-            data["action_id"] = self.action_id
         if self.initial_value:
-            data["initial_value"] = self.initial_value
-        if self.min_length:
-            data["min_length"] = self.min_length
-        if self.max_length:
-            data["max_length"] = self.max_length
+            data["initial_value"] = json.loads(self.initial_value.build_to_json())
         if self.dispatch_action_config:
             data["dispatch_action_config"] = json.loads(self.dispatch_action_config.build_to_json())
         if self.is_focus_on_load:

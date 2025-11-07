@@ -1,11 +1,11 @@
 import sys
 if sys.version_info >= (3, 11):
-    from typing import Self, Sequence
+    from typing import Self, Sequence, Any
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self, Sequence, Any
 from dataclasses import dataclass, field
 import json
-from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError
+from pyblock_builder._internal.errors import TextLengthError, RequiredFieldsError, IncorrectTypeError, ItemLengthError
 from pyblock_builder.objects.text import Text, PlainText, MrkdwnText
 from pyblock_builder.objects.option import Option
 
@@ -53,12 +53,11 @@ class OptionGroup:
         return self
 
     def build_to_json(self) -> str:
-        if self.label is None:
-            raise RequiredFieldError(self, missing_field_names="label")
-        if not self.options:
-            raise RequiredFieldError(self, missing_field_names="options")
+        # raise error if required fields are not set
+        if any([field is None for field in [self.label, self.options]]):
+            raise RequiredFieldsError(self, missing_field_names=["label", "options"])
         # # return JSON representation of object using only non-empty fields and removing leading underscores
-        data = {
+        data: dict[str, Any] = {
             "label": json.loads(self.label.build_to_json()),
             "options": [json.loads(option.build_to_json()) for option in self.options]
         }

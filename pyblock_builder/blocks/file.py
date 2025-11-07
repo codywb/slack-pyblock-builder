@@ -1,33 +1,37 @@
 import sys
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
 
+if sys.version_info >= (3, 11):
+    from typing import Self, Literal, Any
+else:
+    from typing_extensions import Self, Literal, Any
+from dataclasses import dataclass
+import json
+from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldsError, IncorrectTypeError, IncorrectValueError)
+
+@dataclass
 class File:
     """
-    A Python class representing a File block from the Slack BlockKit UI framework\n
+    Displays info about remote files.
     Works on: Message
     """
-    def __init__(self):
-        self._type = "file"
-        self._block_id = ""
-        self._external_id = ""
-        self._source = "remote"
-        self.block = {
-            "type": self._type,
-            "source": self._source
-        }
+    type: Literal["file"] = "file"
+    external_id: str | None = None
+    source: str | None = "remote"
+    block_id: str | None = None
 
     def set_block_id(self, block_id: str) -> Self:
         """
         (Optional) Sets a unique identifier for a block which can be used when receiving an interaction payload to
         identify the source of an action. If not set, will be auto-generated.
-        :param block_id: String; max 255 chars, should be unique for each message and each subsequent iteration thereof. If a message is updated, use a new block_id.
+        :param block_id: String; max 255 chars, should be unique for each message and each subsequent iteration thereof.
+        If a message is updated, use a new block_id.
         :return: self
         """
-        self._block_id = block_id
-        self.block["block_id"] = self._block_id
+        if not isinstance(block_id, str):
+            raise IncorrectTypeError(self, method="set_block_id", compatible_types=str, incompatible_type=block_id)
+        if not 1 <= len(block_id) <= 255:
+            raise TextLengthError(self, field="block_id", min_length=1, max_length=255)
+        self.block_id = block_id
         return self
 
     def set_external_id(self, external_id: str) -> Self:
@@ -36,8 +40,9 @@ class File:
         :param external_id: String
         :return: self
         """
-        self._external_id = external_id
-        self.block["external_id"] = self._external_id
+        if not isinstance(external_id, str):
+            raise IncorrectTypeError(self, method="set_external_id", compatible_types=str, incompatible_type=external_id)
+        self.external_id = external_id
         return self
 
     def set_source(self, source: str) -> Self:
@@ -46,6 +51,24 @@ class File:
         :param source: String; at the moment, this will always be "remote" for a remote file
         :return: self
         """
-        self._source = source
-        self.block["source"] = self._source
+        if not isinstance(source, str):
+            raise IncorrectTypeError(self, method="set_source", compatible_types=str, incompatible_type=source)
+        if self.source is not "remote": # may be updated in later versions to accept other values
+            raise IncorrectValueError(self, method="set_source", acceptable_values="remote", unacceptable_value=source)
+        self.source = source
         return self
+
+    def build_to_json(self) -> str:
+        # raise error if required fields are not set
+        if any([field is None for field in [self.external_id, self.source]]):
+            raise RequiredFieldsError(self, missing_field_names=["external_id", "source"])
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+            "external_id": self.external_id,
+            "source": self.source,
+        }
+        if self.block_id:
+            data["block_id"] = self.block_id
+
+        return json.dumps(data)

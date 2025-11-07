@@ -1,182 +1,336 @@
 import sys
+
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, Literal, Any, Sequence
 else:
-    from typing_extensions import Self
-from pyblock_builder.objects.text import Text
+    from typing_extensions import Self, Literal, Any, Sequence
+from dataclasses import dataclass, field
+import json
+from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError)
+from pyblock_builder.objects.text import PlainText
+from pyblock_builder.objects import ConfirmationDialog, Option, OptionGroup, ConversationsFilter
 
-
+@dataclass
 class MultiSelectMenu:
     """
-    A Python class representing a basic Multi-select menu element from the Slack BlockKit UI framework\n
-    Can be added to: Section, Actions, Input
+    Allows users to select multiple items from a list of options.
+    Can be added to: Section, Input
     Works on: Modal, Message, AppHome
     """
-    def __init__(self):
-        self._type = None
-        self._action_id = ""
-        self._confirm = None
-        self._max_selected_items = None
-        self._focus_on_load = False
-        self._placeholder = None
-        self.json = {
-            "type": self._type,
-            "action_id": self._action_id,
-            "focus_on_load": self._focus_on_load,
-            "confirm": None,
-            "placeholder": None
-        }
+    type: str | None = None
+    action_id: str | None = None
+    confirm: ConfirmationDialog | None = None
+    max_selected_items: int | None = None
+    is_focus_on_load: bool | None = None
+    placeholder: PlainText | None = None
 
     def set_action_id(self, action_id: str) -> Self:
         """
-        (Optional) Sets the action_id of the Block element which identifies the source of the action in the JSON payload
+        Sets the action_id of the Block element which identifies the source of the action in the JSON payload
         :param action_id: String; must be unique within a single block, max 255 chars
         :return: self
         """
-        self._action_id = action_id
-        self.json["action_id"] = self._action_id
+        if not isinstance(action_id, str):
+            raise IncorrectTypeError(self, method="set_action_id", compatible_types=str, incompatible_type=action_id)
+        if not 1 <= len(action_id) <= 255:
+            raise TextLengthError(self, field="action_id", min_length=1, max_length=255)
+        self.action_id = action_id
         return self
 
-    def set_max_selected_items(self, num_items: int) -> Self:
+    def set_placeholder_text(self, placeholder_text: PlainText) -> Self:
         """
-        (Optional) Sets the maximum number of items that can be selected in the menu
-        :param num_items: Integer; minimum number is 1
+        (Optional) Sets the placeholder text shown on the multi-select menu
+        :param placeholder_text: PlainText; max 150 chars
         :return: self
         """
-        self._max_selected_items = num_items
-        self.json["max_selected_items"] = self._max_selected_items
+        if not isinstance(placeholder_text, PlainText):
+            raise IncorrectTypeError(self, method="set_placeholder_text", compatible_types=PlainText, incompatible_type=placeholder_text)
+        if not 1 <= len(placeholder_text.text) <= 150:
+            raise TextLengthError(self, field="text", min_length=1, max_length=150)
+        self.placeholder = placeholder_text
         return self
 
-    def set_placeholder_text(self, placeholder_text):
-        """
-        (Optional) Sets the placeholder text shown on the menu.
-        :param placeholder_text: String; max 150 chars
-        :return: Nothing
-        """
-        self._placeholder = Text().set_text(placeholder_text)
-        self.json["placeholder"] = self._placeholder.json
-        return self
-
-    def set_confirm_dialog(self, confirm_dialog) -> Self:
-        """
-        (Optional) Adds a confirmation dialog to be displayed before the multi-select choices are submitted
-        :param confirm_dialog: ConfirmationDialog object
-        :return: self
-        """
-        self._confirm = confirm_dialog
-        self.json["confirm"] = self._confirm.json
-        return self
-
-    def focus_on_load(self) -> Self:
+    def focus_on_load(self, focus: bool=True) -> Self:
         """
         (Optional) Indicates whether the element will be set to autofocus within the View object. Only one element
         can be set to focus.
         :return: self
         """
-        self._focus_on_load = True
-        self.json["focus_on_load"] = self._focus_on_load
+        self.is_focus_on_load = focus
         return self
 
+    def set_confirm_dialog(self, confirm_dialog: ConfirmationDialog) -> Self:
+        """
+        (Optional) Adds a confirmation dialog that appears before the multi-select choices are submitted
+        :param confirm_dialog: ConfirmationDialog object
+        :return: self
+        """
+        if not isinstance(confirm_dialog, ConfirmationDialog):
+            raise IncorrectTypeError(self, method="set_confirm_dialog", compatible_types=ConfirmationDialog,
+                                     incompatible_type=confirm_dialog)
+        self.confirm = confirm_dialog
+        return self
 
-class MultiStaticSelect(MultiSelectMenu):
+    def set_max_selected_items(self, max_items: int) -> Self:
+        """
+        Specifies the maximum number of items that can be selected in the menu.
+        :param max_items: int; minimum number is 1
+        :return: self
+        """
+        if not isinstance(max_items, int):
+            raise IncorrectTypeError(self, method="set_max_selected_items", compatible_types=int, incompatible_type=max_items)
+        if not max_items >= 1:
+            raise ValueError(f"The 'set_max_selected_items' method of {self.__class__.__name__} must be set to a value of at least 1")
+        self.max_selected_items = max_items
+        return self
+
+    def build_to_json(self) -> str:
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+        }
+        if self.placeholder:
+            data["placeholder"] = json.loads(self.placeholder.build_to_json())
+        if self.action_id:
+            data["action_id"] = self.action_id
+        if self.confirm:
+            data["confirm"] = json.loads(self.confirm.build_to_json())
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
+        if self.max_selected_items:
+            data["max_selected_items"] = self.max_selected_items
+
+        return json.dumps(data)
+
+@dataclass
+class MultiStaticSelectMenu(MultiSelectMenu):
     """
-    A Python class representing a Multi-select menu element with static options from the Slack BlockKit UI framework\n
+    The most basic form of multi-select menu, with a static list of options passed in when defining the element
     Can be added to: Section, Actions, Input
     Works on: Modal, Message, AppHome
     """
-    def __init__(self):
-        super().__init__()
-        self._type = "multi_static_select"
-        self._options = []
-        self._option_groups = []
-        self._initial_options = []
-        self.json = {
-            "type": self._type,
-            "action_id": self._action_id,
-            "focus_on_load": self._focus_on_load
-        }
+    type: Literal["multi_static_select"] = "multi_static_select"
+    options: list[Option] = field(default_factory=list)
+    option_groups: list[OptionGroup] = field(default_factory=list)
+    initial_options: list[Option] = field(default_factory=list)
 
-    def set_options(self, *options) -> Self:
+    def set_options(self, *options: Option | Sequence[Option]) -> Self:
         """
-        (Required) Sets the options for selection in this menu
-        :param options: One or more Option objects; maximum of 100 options. Do not set if setting self.option_groups!
-        :return: self
-        """
-        for option in options:
-            self._options.append(option.json)
-        self.json["options"] = self._options
+       Sets the options belonging to this specific group
+       :param options: One or more Option objects, or a list/tuple of Option objects; maximum of 100 items
+       :return: self
+       """
+        flattened_options = []
+        for opt in options:
+            if isinstance(opt, (list, tuple)):
+                flattened_options.extend(opt)
+            else:
+                flattened_options.append(opt)
+
+        if not 1 <= len(flattened_options) <= 100:
+            raise ItemLengthError(self, field="options", min_length=1, max_length=100)
+
+        for option in flattened_options:
+            if not isinstance(option, Option):
+                raise IncorrectTypeError(self, method="set_options", compatible_types=Option, incompatible_type=option)
+            self.options.append(option)
         return self
 
-    def set_option_groups(self, *option_groups) -> Self:
+    def set_option_groups(self, *option_groups: OptionGroup | Sequence[OptionGroup]) -> Self:
         """
-        (Optional) Sets the options for selection in this menu
-        :param option_groups: One or more OptionGroup objects; maximum of 100 option groups. Do not set if setting
-        self.options!
-        :return: self
-        """
-        for option_group in option_groups:
-            self._option_groups.append(option_group.json)
-        self.json["option_groups"] = self._option_groups
+       Sets the option groups belonging to this specific group
+       :param option_groups: One or more OptionGroup objects, or a list/tuple of OptionGroup objects; maximum of 100 items
+       :return: self
+       """
+        flattened_option_groups = []
+        for opt_group in option_groups:
+            if isinstance(opt_group, (list, tuple)):
+                flattened_option_groups.extend(opt_group)
+            else:
+                flattened_option_groups.append(opt_group)
+
+        if not 1 <= len(flattened_option_groups) <= 100:
+            raise ItemLengthError(self, field="option_groups", min_length=1, max_length=100)
+
+        for option_group in flattened_option_groups:
+            if not isinstance(option_group, OptionGroup):
+                raise IncorrectTypeError(self, method="set_option_groups", compatible_types=OptionGroup, incompatible_type=option_group)
+            self.option_groups.append(option_group)
         return self
 
-    def set_initial_options(self, *options) -> Self:
+    def set_initial_options(self, *options: Option | Sequence[Option]) -> Self:
         """
         (Optional) Sets the options that will be initially selected when the menu loads. Must contain at
-        least one option that exactly matches one of the options in self.options or self.option_groups.
-        :param options: One or more Option objects; preface with * if passing in a list
+        least one option that exactly matches one of the options in self.options or self.option_groups
+        :param options: One or more Option objects, or a list/tuple of Option objects
         :return: self
         """
-        for option in options:
-            self._initial_options.append(option.json)
-        self.json["initial_options"] = self._initial_options
+        flattened_options = []
+        for opt in options:
+            if isinstance(opt, (list, tuple)):
+                flattened_options.extend(opt)
+            else:
+                flattened_options.append(opt)
+
+        for option in flattened_options:
+            if not isinstance(option, Option):
+                raise IncorrectTypeError(self, method="set_initial_options", compatible_types=Option,
+                                         incompatible_type=option)
+            self.initial_options.append(option)
         return self
 
+    def build_to_json(self) -> str:
+        # raise error if required fields are not set
+        if not any([self.options, self.option_groups]):
+            raise RequiredFieldError(self, missing_field_names=["options", "options_groups"])
+        if self.option_groups and self.options:
+            raise TypeError(f"Setting both 'options' and 'option_groups' on an {self.__class__.__name__} element will result in the Slack API rejecting the payload.")
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+        }
+        if self.placeholder:
+            data["placeholder"] = json.loads(self.placeholder.build_to_json())
+        if self.action_id:
+            data["action_id"] = self.action_id
+        if self.confirm:
+            data["confirm"] = json.loads(self.confirm.build_to_json())
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
+        if self.max_selected_items:
+            data["max_selected_items"] = self.max_selected_items
+        if self.options:
+            data["options"] = [json.loads(option.build_to_json()) for option in self.options]
+        if self.option_groups:
+            data["option_groups"] = [json.loads(option_group.build_to_json()) for option_group in self.option_groups]
+        if self.initial_options:
+            data["initial_options"] = [json.loads(option.build_to_json()) for option in self.initial_options]
 
-class MultiUsersSelect(MultiSelectMenu):
+        return json.dumps(data)
+
+@dataclass
+class MultiExternalSelectMenu(MultiSelectMenu):
     """
-    A Python class representing a Multi-select menu element with a User list from the Slack BlockKit UI framework\n
+    This menu will load its options from an external data source, allowing for a dynamic list of options.
     Can be added to: Section, Actions, Input
     Works on: Modal, Message, AppHome
     """
-    def __init__(self):
-        super().__init__()
-        self._type = "multi_users_select"
-        self._initial_users = []
-        self.json = {
-            "type": self._type,
-            "action_id": self._action_id,
-            "focus_on_load": self._focus_on_load,
-        }
+    type: Literal["multi_external_select"] = "multi_external_select"
+    initial_options: list[Option] = field(default_factory=list)
+    min_query_length: int | None = None
 
-    def set_initial_users(self, user_ids: list) -> Self:
+    def set_initial_options(self, *options: Option | Sequence[Option]) -> Self:
+        """
+        (Optional) Sets the options that will be initially selected when the menu loads. Must contain at
+        least one option that exactly matches one of the options in self.options or self.option_groups
+        :param options: One or more Option objects, or a list/tuple of Option objects
+        :return: self
+        """
+        flattened_options = []
+        for opt in options:
+            if isinstance(opt, (list, tuple)):
+                flattened_options.extend(opt)
+            else:
+                flattened_options.append(opt)
+
+        for option in flattened_options:
+            if not isinstance(option, Option):
+                raise IncorrectTypeError(self, method="set_initial_options", compatible_types=Option,
+                                         incompatible_type=option)
+            self.initial_options.append(option)
+        return self
+
+    def set_min_query_length(self, min_length: int) -> Self:
+        """
+        Specifies the fewest number of typed characters required before dispatching a request to the external source.
+        :param min_length: int; defaults to 3
+        :return: self
+        """
+        if not isinstance(min_length, int):
+            raise IncorrectTypeError(self, method="set_min_query_length", compatible_types=int, incompatible_type=min_length)
+        if not min_length >= 1:
+            raise ValueError(f"The 'set_min_query_length' method of {self.__class__.__name__} must be set to a value of at least 1")
+        self.min_query_length = min_length
+        return self
+
+    def build_to_json(self) -> str:
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+        }
+        if self.placeholder:
+            data["placeholder"] = json.loads(self.placeholder.build_to_json())
+        if self.action_id:
+            data["action_id"] = self.action_id
+        if self.confirm:
+            data["confirm"] = json.loads(self.confirm.build_to_json())
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
+        if self.min_query_length:
+            data["min_query_length"] = self.min_query_length
+        if self.initial_options:
+            data["initial_options"] = [json.loads(option.build_to_json()) for option in self.initial_options]
+
+        return json.dumps(data)
+
+@dataclass
+class MultiUsersSelectMenu(MultiSelectMenu):
+    """
+    This multi-select menu will populate its options with a list of Slack users visible to the current user in the
+    active workspace.
+    Can be added to: Section, Actions, Input
+    Works on: Modal, Message, AppHome
+    """
+    type: Literal["multi_users_select"] = "multi_users_select"
+    initial_users: list[str] = field(default_factory=list)
+
+    def set_initial_users(self, user_ids: list[str]) -> Self:
         """
         (Optional) Sets a list of pre-selected users when the menu loads
-        :param user_ids: List of Slack User IDs as Strings
+        :param user_ids: List of Slack User IDs as strings
         :return: self
         """
-        self._initial_users = user_ids
-        self.json["initial_users"] = self._initial_users
+        if not isinstance(user_ids, list):
+            raise IncorrectTypeError(self, method="set_initial_users", compatible_types=list[str], incompatible_type=user_ids)
+        if isinstance(user_ids, list):
+            for user_id in user_ids:
+                if not isinstance(user_id, str):
+                    raise TypeError("Non-string value included in user_ids list passed as argument to the 'set_initial_users' method of MultiUserSelect")
+        self.initial_users = user_ids
         return self
 
+    def build_to_json(self) -> str:
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+        }
+        if self.placeholder:
+            data["placeholder"] = json.loads(self.placeholder.build_to_json())
+        if self.action_id:
+            data["action_id"] = self.action_id
+        if self.confirm:
+            data["confirm"] = json.loads(self.confirm.build_to_json())
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
+        if self.max_selected_items:
+            data["max_selected_items"] = self.max_selected_items
+        if self.initial_users:
+            data["initial_users"] = self.initial_users
 
-class MultiConversationsSelect(MultiSelectMenu):
+        return json.dumps(data)
+
+@dataclass
+class MultiConversationsSelectMenu(MultiSelectMenu):
     """
-    A Python class representing a Multi-select menu element with a Conversations list from the Slack BlockKit UI framework\n
+    This multi-select menu will populate its options with a list of public and private channels, DMs, and MPIMs visible
+    to the current user in the active workspace.
     Can be added to: Section, Actions, Input
     Works on: Modal, Message, AppHome
     """
-    def __init__(self):
-        super().__init__()
-        self._type = "multi_conversations_select"
-        self._initial_conversations = []
-        self._default_to_current_conversation = False
-        self._filter = None
-        self.json = {
-            "type": self._type,
-            "action_id": self._action_id,
-            "focus_on_load": self._focus_on_load,
-            "default_to_current_conversation": False,
-        }
+    type: Literal["multi_conversations_select"] = "multi_conversations_select"
+    initial_conversations: list[str] = field(default_factory=list)
+    defaults_to_current_conversation: bool | None = None
+    filter: ConversationsFilter | None = None
 
     def set_initial_conversations(self, conversation_ids: list) -> Self:
         """
@@ -184,8 +338,14 @@ class MultiConversationsSelect(MultiSelectMenu):
         :param conversation_ids: List of valid conversation IDs as Strings; ignored if self.default_to_current_conversation is set to True
         :return: self
         """
-        self._initial_conversations = conversation_ids
-        self.json["initial_conversations"] = self._initial_conversations
+        if not isinstance(conversation_ids, list):
+            raise IncorrectTypeError(self, method="set_initial_conversations", compatible_types=list[str], incompatible_type=conversation_ids)
+        if isinstance(conversation_ids, list):
+            for conversation_id in conversation_ids:
+                if not isinstance(conversation_id, str):
+                    raise TypeError("Non-string value included in conversation_ids list passed as argument to the "
+                                    "'set_initial_conversations' method of MultiConversationSelect")
+        self.initial_conversations = conversation_ids
         return self
 
     def default_to_current_conversation(self) -> Self:
@@ -194,44 +354,87 @@ class MultiConversationsSelect(MultiSelectMenu):
         modal, if available
         :return: self
         """
-        self._default_to_current_conversation = True
-        self.json["default_to_current_conversation"] = self._default_to_current_conversation
+        self.defaults_to_current_conversation = True
         return self
 
-    def set_filter(self, filter_obj) -> Self:
+    def set_filter(self, filter: ConversationsFilter) -> Self:
         """
         (Optional) Sets a filter for reducing the list of available conversations using the specified criteria
         :param filter_obj: ConversationsFilter object
         :return: self
         """
-        self._filter = filter_obj
-        self.json["filter"] = self._filter
+        if not isinstance(filter, ConversationsFilter):
+            raise IncorrectTypeError(self, method="set_filter", compatible_types=ConversationsFilter,
+                                     incompatible_type=filter)
+        self.filter = filter
         return self
 
+    def build_to_json(self) -> str:
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+        }
+        if self.placeholder:
+            data["placeholder"] = json.loads(self.placeholder.build_to_json())
+        if self.action_id:
+            data["action_id"] = self.action_id
+        if self.confirm:
+            data["confirm"] = json.loads(self.confirm.build_to_json())
+        if self.filter:
+            data["filter"] = json.loads(self.filter.build_to_json())
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
+        if self.default_to_current_conversation:
+            data["default_to_current_conversation"] = self.defaults_to_current_conversation
+        if self.max_selected_items:
+            data["max_selected_items"] = self.max_selected_items
+        if self.initial_conversations:
+            data["initial_conversations"] = self.initial_conversations
 
-class MultiChannelsSelect(MultiSelectMenu):
+        return json.dumps(data)
+
+@dataclass
+class MultiChannelsSelectMenu(MultiSelectMenu):
     """
-    A Python class representing a Multi-select menu element with a public channels list from the Slack BlockKit UI framework\n
+    This multi-select menu will populate its options with a list of public channels visible to the current user in the
+    active workspace.
     Can be added to: Section, Actions, Input
     Works on: Modal, Message, AppHome
     """
-    def __init__(self):
-        super().__init__()
-        self._type = "multi_channels_select"
-        self._initial_channels = []
-        self.json = {
-            "type": self._type,
-            "action_id": self._action_id,
-            "focus_on_load": self._focus_on_load,
-        }
+    type: Literal["multi_channels_select"] = "multi_channels_select"
+    initial_channels: list[str] = field(default_factory=list)
 
-    def set_initial_channels(self, channel_ids: list) -> Self:
+    def set_initial_channels(self, channel_ids: list[str]) -> Self:
         """
-        Sets a list of pre-selected public channels when the menu loads
-        :param channel_ids: List of valid public Slack Channel IDs as Strings
+        (Optional) Sets a list of pre-selected public channels when the menu loads
+        :param channel_ids: List of valid public Slack Channel IDs as strings
         :return: self
         """
-        self._initial_channels = channel_ids
-        self.json["initial_channels"] = self._initial_channels
+        if not isinstance(channel_ids, list):
+            raise IncorrectTypeError(self, method="set_initial_channels", compatible_types=list[str], incompatible_type=channel_ids)
+        if isinstance(channel_ids, list):
+            for channel_id in channel_ids:
+                if not isinstance(channel_id, str):
+                    raise TypeError("Non-string value included in channel_ids list passed as argument to the 'set_initial_channels' method of MultiChannelSelect")
+        self.initial_channels = channel_ids
         return self
 
+    def build_to_json(self) -> str:
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+        }
+        if self.placeholder:
+            data["placeholder"] = json.loads(self.placeholder.build_to_json())
+        if self.action_id:
+            data["action_id"] = self.action_id
+        if self.confirm:
+            data["confirm"] = json.loads(self.confirm.build_to_json())
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
+        if self.max_selected_items:
+            data["max_selected_items"] = self.max_selected_items
+        if self.initial_channels:
+            data["initial_channels"] = self.initial_channels
+
+        return json.dumps(data)

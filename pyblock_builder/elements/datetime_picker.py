@@ -21,7 +21,7 @@ class DateTimePicker:
     action_id: str | None = None
     initial_date_time: int | datetime = None
     confirm: ConfirmationDialog | None = None
-    is_focus_on_load: bool = False
+    is_focus_on_load: bool | None = None
 
     def set_action_id(self, action_id: str) -> Self:
         """
@@ -42,13 +42,15 @@ class DateTimePicker:
         :param date_time: UNIX timestamp in seconds (should be 10 digits) or Python datetime object
         :return: self
         """
+        if not isinstance(initial_date_time, int) and not isinstance(initial_date_time, datetime):
+            raise IncorrectTypeError(self, method="set_initial_date_time", compatible_types=[int, datetime], incompatible_type=initial_date_time)
         if isinstance(initial_date_time, datetime):
             self.initial_date_time = int(initial_date_time.timestamp())
         else:
             self.initial_date_time = initial_date_time
         return self
 
-    def focus_on_load(self, focus: bool = True) -> Self:
+    def focus_on_load(self, focus: bool=True) -> Self:
         """
         (Optional) Indicates whether the element will be set to autofocus within the View object. Only one element
         can be set to focus.
@@ -59,7 +61,7 @@ class DateTimePicker:
 
     def set_confirm_dialog(self, confirm_dialog: ConfirmationDialog) -> Self:
         """
-        (Optional) Adds a confirmation dialog to be displayed after one of the checkboxes is clicked
+        (Optional) Defines an optional confirmation dialog that appears after a time is selected.
         :param confirm_dialog: ConfirmationDialog object
         :return: self
         """
@@ -70,20 +72,17 @@ class DateTimePicker:
         return self
 
     def build_to_json(self) -> str:
-        # raise error if required fields are not set
-        if self.type is None:
-            raise RequiredFieldError(self, missing_field_names="type")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
             "type": self.type,
         }
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
         if self.action_id:
             data["action_id"] = self.action_id
         if self.initial_date_time:
             data["initial_date_time"] = self.initial_date_time
         if self.confirm:
             data["confirm"] = json.loads(self.confirm.build_to_json())
-        if self.is_focus_on_load:
-            data["focus_on_load"] = self.is_focus_on_load
 
         return json.dumps(data)

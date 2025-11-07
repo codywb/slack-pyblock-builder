@@ -1,131 +1,179 @@
 import sys
+
+from pyblock_builder.objects import PlainText
+
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, Literal, Any
 else:
-    from typing_extensions import Self
-from pyblock_builder.objects.text import Text
+    from typing_extensions import Self, Literal, Any
+from dataclasses import dataclass
+import json
+from pyblock_builder._internal.errors import TextLengthError, IncorrectTypeError, RequiredFieldsError
 
-
+@dataclass
 class Video:
     """
-    A Python class representing a Video block from the Slack BlockKit UI framework\n
+    Displays an embedded video player.
     Works on: Modal, Message, AppHome
     """
-    def __init__(self):
-        self._type = 'video'
-        self._block_id = ""
-        self._alt_text = ""
-        self._author_name = ""
-        self._description = None
-        self._provider_icon_url = ""
-        self._provider_name = ""
-        self._title = None
-        self._title_url = ""
-        self._thumbnail_url = ""
-        self._video_url = ""
-        self.block = {
-            "type": self.type,
-        }
+    type: Literal["video"] = "video"
+    alt_text: str | None = None
+    author_name: str | None = None
+    block_id: str | None = None
+    description: PlainText | None = None
+    provider_icon_url: str | None = None
+    provider_name: str | None = None
+    title: PlainText | None = None
+    title_url: str | None = None
+    thumbnail_url: str | None = None
+    video_url: str | None = None
+
+    def set_alt_text(self, alt_text: str) -> Self:
+        """
+        Sets the tooltip for the video. Required for accessibility
+        :param alt_text: String
+        :return: self
+        """
+        if not isinstance(alt_text, str):
+            raise IncorrectTypeError(self, method="set_alt_text", compatible_types=str, incompatible_type=alt_text)
+        self.alt_text = alt_text
+        return  self
+
+    def set_author_name(self, name: str) -> Self:
+        """
+        (Optional) Sets the author name to be displayed.
+        :param alt_text: String; must be less than 50 characters
+        :return: self
+        """
+        if not isinstance(name, str):
+            raise IncorrectTypeError(self, method="set_author_name", compatible_types=str, incompatible_type=name)
+        if not 1 <= len(name) < 50:
+            raise TextLengthError(self, field="author_name", min_length=1, max_length=49)
+        self.author_name = name
+        return  self
+
+    def set_provider_name(self, name: str) -> Self:
+        """
+        (Optional) Sets the name of the  originating application or domain of the video (e.g. YouTube).
+        :param alt_text: String
+        :return: self
+        """
+        if not isinstance(name, str):
+            raise IncorrectTypeError(self, method="set_provider_name", compatible_types=str, incompatible_type=name)
+        if not 1 <= len(name) < 50:
+            raise TextLengthError(self, field="provider_name", min_length=1, max_length=49)
+        self.provider_name = name
+        return  self
+
+    def set_title(self, title_text: PlainText) -> Self:
+        """
+        Sets the title of the video.
+        :param description_text: PlainText object; must be less than 200 characters
+        :return: self
+        """
+        if not isinstance(title_text, PlainText):
+            raise IncorrectTypeError(self, method="set_title", compatible_types=PlainText, incompatible_type=title_text)
+        if not 1 <= len(title_text.text) < 200:
+            raise TextLengthError(self, field="text", min_length=1, max_length=199)
+        self.title = title_text
+        return self
 
     def set_block_id(self, block_id: str) -> Self:
         """
         (Optional) Sets a unique identifier for a block which can be used when receiving an interaction payload to
         identify the source of an action. If not set, will be auto-generated.
-        :param block_id: String; max 255 chars, should be unique for each message and each subsequent iteration thereof. If a message is updated, use a new block_id.
+        :param block_id: String; max 255 chars, should be unique for each message and each subsequent iteration thereof.
+        If a message is updated, use a new block_id.
         :return: self
         """
-        self._block_id = block_id
-        self.block["block_id"] = self._block_id
+        if not isinstance(block_id, str):
+            raise IncorrectTypeError(self, method="set_block_id", compatible_types=str, incompatible_type=block_id)
+        if not 1 <= len(block_id) <= 255:
+            raise TextLengthError(self, field="block_id", min_length=1, max_length=255)
+        self.block_id = block_id
         return self
 
-    def set_alt_text(self, alt_text: str) -> Self:
+    def set_description(self, description_text: PlainText) -> Self:
         """
-        (Required) Sets a tooltip for the video. Required for accessibility
-        :param alt_text: String
+        (Preferred) Sets the description for the video.
+        :param description_text: PlainText object; must be less than 200 characters
         :return: self
         """
-        self._alt_text = alt_text
-        self.block["alt_text"] = self._alt_text
+        if not isinstance(description_text, PlainText):
+            raise IncorrectTypeError(self, method="set_text", compatible_types=PlainText, incompatible_type=description_text)
+        if not 1 <= len(description_text.text) < 200:
+            raise TextLengthError(self, field="text", min_length=1, max_length=199)
+        self.description = description_text
         return self
 
-    def set_author_name(self, author_name: str) -> Self:
+    def set_provider_icon_url(self, url: str) -> Self:
         """
-        (Optional) Sets author name to be displayed
-        :param author_name: String; must be less than 50 characters
+        (Optional) Sets the URL of the icon for the video provider (e.g. YouTube)
+        :param url: string
         :return: self
         """
-        self._author_name = author_name
-        self.block["author_name"] = self._author_name
-        return self
+        if not isinstance(url, str):
+            raise IncorrectTypeError(self, method="set_provider_icon_url", compatible_types=str, incompatible_type=url)
+        self.provider_icon_url = url
+        return  self
 
-    def set_description(self, descriptive_text: str) -> Self:
+    def set_video_url(self, url: str) -> Self:
         """
-        (Optional) Sets the text to be shown above the video
-        :param descriptive_text: String
+        Sets the URL of the video to be embedded. Must match any existing unfurl domains within the app and point to an
+        HTTPS URL.
+        :param url: string
         :return: self
         """
-        self._description = Text().set_text(descriptive_text)
-        self.block["description"] = self._description.json
-        return self
+        if not isinstance(url, str):
+            raise IncorrectTypeError(self, method="set_video_url", compatible_types=str, incompatible_type=url)
+        self.video_url = url
+        return  self
 
-    def set_provider_icon_url(self, provider_icon_url: str) -> Self:
-        """
-        (Optional) Sets the icon for the video provider, e.g. YouTube icon
-        :param provider_icon_url: String
-        :return: self
-        """
-        self._provider_icon_url = provider_icon_url
-        self.block["provider_icon_url"] = self._provider_icon_url
-        return self
-
-    def set_provider_name(self, provider_name: str) -> Self:
-        """
-        (Optional) Sets the originating application or domain of the video, e.g. YouTube
-        :param provider_name: String
-        :return: self
-        """
-        self._provider_name = provider_name
-        self.block["provider_name"] = self._provider_name
-        return self
-
-    def set_title(self, title_text: str) -> Self:
-        """
-        (Required) Set the video title
-        :param title_text: String; must be less than 200 characters
-        :return: self
-        """
-        self._title = Text().set_text(title_text)
-        self.block["title"] = self._title.json
-        return self
-
-    def set_title_url(self, title_url: str) -> Self:
+    def set_title_url(self, url: str) -> Self:
         """
         (Preferred) Sets the hyperlink for the title text. Must correspond to the non-embeddable URL for the video.
         Must go to an HTTPS URL.
-        :param title_url: String
+        :param url: string
         :return: self
         """
-        self._title_url = title_url
-        self.block["title_url"] = self._title_url
-        return self
+        if not isinstance(url, str):
+            raise IncorrectTypeError(self, method="set_title_url", compatible_types=str, incompatible_type=url)
+        self.title_url = url
+        return  self
 
-    def set_thumbnail_url(self, thumbnail_url: str) -> Self:
+    def set_thumbnail_url(self, url: str) -> Self:
         """
-        (Required) Sets the thumbnail image URL
-        :param thumbnail_url: String
+        Sets the URL of the thumbnail image to be displayed.
+        :param url: string
         :return: self
         """
-        self._thumbnail_url = thumbnail_url
-        self.block["thumbnail_url"] = self._thumbnail_url
-        return self
+        if not isinstance(url, str):
+            raise IncorrectTypeError(self, method="set_thumbnail_url", compatible_types=str, incompatible_type=url)
+        self.thumbnail_url = url
+        return  self
 
-    def set_video_url(self, video_url: str) -> Self:
-        """
-        (Required) Sets the URL to be embedded. Must match any existing unfurl domains within the app and point to a
-        HTTPS URL.
-        :param video_url: String
-        :return: self
-        """
-        self._video_url = video_url
-        self.block["video_url"] = self._video_url
-        return self
+    def build_to_json(self) -> str:
+        # raise error if required fields are not set
+        if any([field is None for field in [self.alt_text, self.title, self.thumbnail_url, self.video_url]]):
+            raise RequiredFieldsError(self, missing_field_names=["alt_text", "title", "thumbnail_url", "video_url"])
+        data: dict[str, Any] = {
+            "type": self.type,
+            "alt_text": self.alt_text,
+            "title": json.loads(self.title.build_to_json()),
+            "thumbnail_url": self.thumbnail_url,
+            "video_url": self.video_url,
+        }
+        if self.author_name:
+            data["author_name"] = self.author_name
+        if self.block_id:
+            data["block_id"] = self.block_id
+        if self.description:
+            data["description"] = json.loads(self.description.build_to_json())
+        if self.provider_icon_url:
+            data["provider_icon_url"] = self.provider_icon_url
+        if self.provider_name:
+            data["provider_name"] = self.provider_name
+        if self.title_url:
+            data["title_url"] = self.title_url
+
+        return json.dumps(data)

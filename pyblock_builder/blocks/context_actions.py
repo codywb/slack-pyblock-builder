@@ -6,20 +6,20 @@ else:
     from typing_extensions import Self, Literal, Any, Sequence
 from dataclasses import dataclass, field
 import json
-from pyblock_builder.elements import Image
-from pyblock_builder.objects import PlainText, MrkdwnText
+from pyblock_builder.elements import FeedbackButtons, IconButton
 from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError,
                                               ItemLengthError)
 
 @dataclass
-class Context:
+class ContextActions:
     """
-    Holds image elements and text objects to display under other blocks.
-    Works on: Modal, Message, AppHome
+    Displays actions as contextual info, which can include both feedback buttons and icon buttons.
+    Works on: Message
+    Compatible with: Feedback buttons, Icon button
     """
-    type: Literal["context"] = "context"
+    type: Literal["context_actions"] = "context_actions"
     block_id: str | None = None
-    elements: list[Image | PlainText | MrkdwnText] = field(default_factory=list)
+    elements: list[FeedbackButtons | IconButton] = field(default_factory=list)
 
     def set_block_id(self, block_id: str) -> Self:
         """
@@ -36,13 +36,13 @@ class Context:
         self.block_id = block_id
         return self
 
-    def add_elements(self, *elements: Image | PlainText | MrkdwnText | Sequence[Image | PlainText | MrkdwnText]) -> Self:
+    def add_elements(self, *elements: FeedbackButtons | IconButton | Sequence[FeedbackButtons | IconButton]) -> Self:
         """
-        Used to add one or more image elements or text objects to the block.
-        :param elements: One or more image elements or text objects; maximum of 10 elements per block
+        Used to add one or more Feedback buttons or Icon button elements to the block.
+        :param elements: One or more Feedback buttons or Icon button elements; maximum of 5 elements per block
         :return: self
         """
-        compatible_elements = [Image, PlainText, MrkdwnText]
+        compatible_elements = [FeedbackButtons, IconButton]
         flattened_elements = []
         for element in elements:
             if isinstance(element, (list, tuple)):
@@ -51,7 +51,7 @@ class Context:
                 flattened_elements.append(element)
 
         if not 1 <= len(flattened_elements) <= 10:
-            raise ItemLengthError(self, field="elements", min_length=1, max_length=10)
+            raise ItemLengthError(self, field="elements", min_length=1, max_length=5)
 
         for element in flattened_elements:
             if not isinstance(element, tuple(compatible_elements)):
@@ -73,20 +73,3 @@ class Context:
             data["block_id"] = self.block_id
 
         return json.dumps(data)
-
-    def build_from_json(self, json: dict[str, Any]) -> Self:
-        """
-        Generates an Context instance from its JSON representation
-        :param json: a JSON representation of a Context block, e.g. from the 'blocks' property of a Slack API interaction payload
-        :return: self
-        """
-        if not isinstance(json, dict):
-            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.block_id = json["block_id"]
-        compatible_types = {
-            "image": Image,
-            "plain_text": PlainText,
-            "mrkdwn_text": MrkdwnText,
-        }
-        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
-        return self

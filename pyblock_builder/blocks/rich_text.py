@@ -6,20 +6,19 @@ else:
     from typing_extensions import Self, Literal, Any, Sequence
 from dataclasses import dataclass, field
 import json
-from pyblock_builder.elements import Image
-from pyblock_builder.objects import PlainText, MrkdwnText
-from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError,
-                                              ItemLengthError)
+from pyblock_builder._internal.errors import TextLengthError, RequiredFieldError, IncorrectTypeError
+from pyblock_builder.base_blocks import RichTextObject
+from pyblock_builder.objects.rich_text import RichTextSection, RichTextList, RichTextQuote, RichTextPreformatted
 
 @dataclass
-class Context:
+class RichText:
     """
-    Holds image elements and text objects to display under other blocks.
+    Displays formatted, structured representation of text.
     Works on: Modal, Message, AppHome
     """
-    type: Literal["context"] = "context"
+    type: Literal["rich_text"] = "rich_text"
+    elements: list[RichTextObject] = field(default_factory=list)
     block_id: str | None = None
-    elements: list[Image | PlainText | MrkdwnText] = field(default_factory=list)
 
     def set_block_id(self, block_id: str) -> Self:
         """
@@ -36,13 +35,13 @@ class Context:
         self.block_id = block_id
         return self
 
-    def add_elements(self, *elements: Image | PlainText | MrkdwnText | Sequence[Image | PlainText | MrkdwnText]) -> Self:
+    def add_elements(self, *elements: RichTextObject | Sequence[RichTextObject]) -> Self:
         """
-        Used to add one or more image elements or text objects to the block.
-        :param elements: One or more image elements or text objects; maximum of 10 elements per block
+        Used to add one or more rich text objects to the block.
+        :param elements: One or more rich text objects (e.g., RichTextSection, RichTextList, RichTextPreformatted, RichTextQuote)
         :return: self
         """
-        compatible_elements = [Image, PlainText, MrkdwnText]
+        compatible_elements = [RichTextSection, RichTextList, RichTextQuote, RichTextPreformatted]
         flattened_elements = []
         for element in elements:
             if isinstance(element, (list, tuple)):
@@ -50,13 +49,9 @@ class Context:
             else:
                 flattened_elements.append(element)
 
-        if not 1 <= len(flattened_elements) <= 10:
-            raise ItemLengthError(self, field="elements", min_length=1, max_length=10)
-
         for element in flattened_elements:
-            if not isinstance(element, tuple(compatible_elements)):
-                raise IncorrectTypeError(self, method="add_elements", compatible_types=compatible_elements,
-                                         incompatible_type=element)
+            if not isinstance(element, RichTextObject):
+                raise IncorrectTypeError(self, method="add_elements", compatible_types=compatible_elements, incompatible_type=element)
             self.elements.append(element)
         return self
 
@@ -73,20 +68,3 @@ class Context:
             data["block_id"] = self.block_id
 
         return json.dumps(data)
-
-    def build_from_json(self, json: dict[str, Any]) -> Self:
-        """
-        Generates an Context instance from its JSON representation
-        :param json: a JSON representation of a Context block, e.g. from the 'blocks' property of a Slack API interaction payload
-        :return: self
-        """
-        if not isinstance(json, dict):
-            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.block_id = json["block_id"]
-        compatible_types = {
-            "image": Image,
-            "plain_text": PlainText,
-            "mrkdwn_text": MrkdwnText,
-        }
-        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
-        return self

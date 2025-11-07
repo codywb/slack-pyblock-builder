@@ -1,9 +1,9 @@
 import sys
 
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, Any
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self, Any
 from dataclasses import dataclass
 import json
 from pyblock_builder._internal.errors import RequiredFieldError, IncorrectTypeError
@@ -48,7 +48,7 @@ class SlackFile:
         if self.url and self.id:
             raise TypeError("Setting both 'url' and 'id' on SlackFile will result in the Slack API rejecting the payload.")
         # return JSON representation of object using only non-empty fields and removing leading underscores
-        data = {}
+        data: dict[str, Any] = {}
         if self.url:
             data["url"] = self.url
         if self.id:

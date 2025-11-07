@@ -9,12 +9,13 @@ import json
 from pyblock_builder._internal.errors import TextLengthError, IncorrectTypeError
 
 @dataclass
-class Divider:
+class Markdown:
     """
-    A content divider to split up different blocks.
-    Works on: Modal, Message, AppHome
+    Displays formatted markdown.
+    Works on: Message
     """
-    type: Literal["divider"] = "divider"
+    type: Literal["markdown"] = "markdown"
+    text: str | None = None
     block_id: str | None = None
 
     def set_block_id(self, block_id: str) -> Self:
@@ -32,10 +33,22 @@ class Divider:
         self.block_id = block_id
         return self
 
+    def set_text(self, markdown_text: str) -> Self:
+        """
+        Defines the standard markdown-formatted text to be displayed.
+        :param markdown_text: string; max 12,000 characters
+        :return: self
+        """
+        if not isinstance(markdown_text, str):
+            raise IncorrectTypeError(self, method="set_text", compatible_types=str, incompatible_type=markdown_text)
+        self.text = markdown_text
+        return self
+
     def build_to_json(self) -> str:
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
             "type": self.type,
+            "text": self.text,
         }
         if self.block_id:
             data["block_id"] = self.block_id

@@ -1,9 +1,9 @@
 import sys
 
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, Any
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self, Any
 from dataclasses import dataclass
 import json
 from pyblock_builder._internal.errors import (RequiredFieldError, IncorrectTypeError, IncorrectValueError)
@@ -36,7 +36,7 @@ class ConversationsFilter:
 
     def exclude_external_shared_channels(self) -> Self:
         """
-        (Optional) Indicates whether to exclude external shared channels from conversation lists
+        (Optional) Exclude external shared channels from conversation lists
         :return: self
         """
         self.exclude_external = True
@@ -44,7 +44,7 @@ class ConversationsFilter:
 
     def exclude_bot_users(self) -> Self:
         """
-        (Optional) Indicates whether to exclude bot users from conversation lists
+        (Optional) Exclude bot users from conversation lists
         :return: self
         """
         self.exclude_bots = True
@@ -52,15 +52,14 @@ class ConversationsFilter:
 
     def build_to_json(self) -> str:
         # raise error if at least one field is not set
-        if not any([self.included_conversations, self.exclude_external, self.exclude_bots]):
-            raise RequiredFieldError(self, missing_field_names=["included_conversations", "exclude_external", "exclude_bots"])
+        if not self.included_conversations:
+            raise RequiredFieldError(self, missing_field_names="included_conversations")
         # return JSON representation of object using only non-empty fields and removing leading underscores
-        data = {}
+        data: dict[str, Any] = {
+            "exclude_external_shared_channels": self.exclude_external,
+            "exclude_bot_users": self.exclude_bots,
+        }
         if self.included_conversations:
             data["include"] = self.included_conversations
-        if self.exclude_external:
-            data["exclude_external_shared_channels"] = self.exclude_external
-        if self.exclude_bots:
-            data["exclude_bot_users"] = self.exclude_bots
 
         return json.dumps(data)

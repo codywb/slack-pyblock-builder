@@ -22,7 +22,7 @@ class EmailInput:
     action_id: str | None = None
     initial_value: str | None = None
     dispatch_action_config: DispatchActionConfig | None = None
-    is_focus_on_load: bool = False
+    is_focus_on_load: bool | None = None
     placeholder: PlainText | None = None
 
     def set_action_id(self, action_id: str) -> Self:
@@ -85,13 +85,12 @@ class EmailInput:
         return self
 
     def build_to_json(self) -> str:
-        # raise error if required fields are not set
-        if self.type is None:
-            raise RequiredFieldError(self, missing_field_names="type")
         # return JSON representation of object using only non-empty fields and removing leading underscores
         data: dict[str, Any] = {
             "type": self.type,
         }
+        if self.is_focus_on_load:
+            data["focus_on_load"] = self.is_focus_on_load
         if self.action_id:
             data["action_id"] = self.action_id
         if self.initial_value:
@@ -100,7 +99,5 @@ class EmailInput:
             data["placeholder"] = json.loads(self.placeholder.build_to_json())
         if self.dispatch_action_config:
             data["dispatch_action_config"] = json.loads(self.dispatch_action_config.build_to_json())
-        if self.is_focus_on_load:
-            data["focus_on_load"] = self.is_focus_on_load
 
         return json.dumps(data)
