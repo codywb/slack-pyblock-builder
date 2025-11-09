@@ -11,7 +11,7 @@ from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldErro
 from pyblock_builder.objects import ConfirmationDialog
 
 @dataclass
-class DateTimePicker:
+class DatetimePicker:
     """
     Allows users to select both a date and a time of day, formatted as a Unix timestamp.
     Can be added to: Actions, Input

@@ -7,7 +7,7 @@ else:
 from dataclasses import dataclass, field
 import json
 from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError)
-from pyblock_builder.elements import (Button, Checkboxes, DatePicker, DateTimePicker, MultiSelectMenu, SelectMenu,
+from pyblock_builder.elements import (Button, Checkboxes, DatePicker, DatetimePicker, MultiSelectMenu, SelectMenu,
                                       RadioButtons, RichTextInput, TimePicker, OverflowMenu, WorkflowButton,
                                       MultiChannelsSelectMenu, MultiConversationsSelectMenu, MultiStaticSelectMenu,
                                       MultiUsersSelectMenu, ChannelsSelectMenu, StaticSelectMenu, UsersSelectMenu,
@@ -23,7 +23,7 @@ class Actions:
     """
     type: Literal["actions"] = "actions"
     block_id: str | None = None
-    elements: list[Button | Checkboxes | DatePicker | DateTimePicker | MultiSelectMenu | SelectMenu |
+    elements: list[Button | Checkboxes | DatePicker | DatetimePicker | MultiSelectMenu | SelectMenu |
                    OverflowMenu | RadioButtons | RichTextInput | TimePicker | WorkflowButton] = field(default_factory=list)
 
     def set_block_id(self, block_id: str) -> Self:
@@ -41,9 +41,9 @@ class Actions:
         self.block_id = block_id
         return self
 
-    def add_elements(self, *elements: Button | Checkboxes | DatePicker | DateTimePicker | MultiSelectMenu |
+    def add_elements(self, *elements: Button | Checkboxes | DatePicker | DatetimePicker | MultiSelectMenu |
                                       SelectMenu | OverflowMenu | RadioButtons | RichTextInput | TimePicker | WorkflowButton |
-                                      Sequence[Button | Checkboxes | DatePicker | DateTimePicker | MultiSelectMenu |
+                                      Sequence[Button | Checkboxes | DatePicker | DatetimePicker | MultiSelectMenu |
                                                SelectMenu | OverflowMenu | RadioButtons | RichTextInput |
                                                TimePicker | WorkflowButton]) -> Self:
         """
@@ -52,11 +52,7 @@ class Actions:
         maximum of 25 elements per block
         :return: self
         """
-        # compatible_elements = ["Button", "Checkboxes", "DatePicker", "DateTimePicker", "MultiStaticSelectMenu",
-        #                        "MultiUsersSelectMenu", "MultiChannelsSelectMenu", "MultiConversationsSelectMenu",
-        #                        "StaticSelectMenu", "UsersSelectMenu", "ChannelsSelectMenu", "ConversationsSelectMenu",
-        #                        "OverflowMenu", "RadioButtons", "RichTextInput", "TimePicker", "WorkflowButton"]
-        compatible_elements = [Button, Checkboxes, DatePicker, DateTimePicker, MultiSelectMenu, SelectMenu,
+        compatible_elements = [Button, Checkboxes, DatePicker, DatetimePicker, MultiSelectMenu, SelectMenu,
                                OverflowMenu, RadioButtons, RichTextInput, TimePicker, WorkflowButton]
         flattened_elements = []
         for element in elements:
@@ -101,7 +97,7 @@ class Actions:
             "button": Button,
             "checkboxes": Checkboxes,
             "datepicker": DatePicker,
-            "datetimepicker": DateTimePicker,
+            "datetimepicker": DatetimePicker,
             "multi_static_select_menu": MultiStaticSelectMenu,
             "multi_users_select_menu": MultiUsersSelectMenu,
             "multi_channels_select_menu": MultiChannelsSelectMenu,

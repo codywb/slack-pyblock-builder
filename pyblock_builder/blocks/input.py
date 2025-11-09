@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import json
 from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldsError, IncorrectTypeError)
 from pyblock_builder.objects import PlainText
-from pyblock_builder.elements import (Checkboxes, DatePicker, DateTimePicker, EmailInput, FileInput, MultiSelectMenu,
+from pyblock_builder.elements import (Checkboxes, DatePicker, DatetimePicker, EmailInput, FileInput, MultiSelectMenu,
                                       NumberInput, PlainTextInput, RadioButtons, RichTextInput, SelectMenu, TimePicker,
                                       UrlInput)
 
@@ -22,7 +22,7 @@ class Input:
     """
     type: Literal["input"] = "input"
     label: PlainText | None = None
-    element: (Checkboxes | DatePicker | DateTimePicker | EmailInput | FileInput | MultiSelectMenu | NumberInput |
+    element: (Checkboxes | DatePicker | DatetimePicker | EmailInput | FileInput | MultiSelectMenu | NumberInput |
               PlainTextInput | RadioButtons | RichTextInput | SelectMenu | TimePicker | UrlInput) | None = None
     dispatches_action: bool | None = False
     block_id: str | None = None
@@ -57,17 +57,17 @@ class Input:
         self.label = label_text
         return self
 
-    def add_element(self, element: Checkboxes | DatePicker | DateTimePicker | EmailInput | FileInput | MultiSelectMenu | NumberInput |
-              PlainTextInput | RadioButtons | RichTextInput | SelectMenu | TimePicker | UrlInput) -> Self:
+    def add_element(self, element: Checkboxes | DatePicker | DatetimePicker | EmailInput | FileInput | MultiSelectMenu | NumberInput |
+                                   PlainTextInput | RadioButtons | RichTextInput | SelectMenu | TimePicker | UrlInput) -> Self:
         """
         Used to add an interactive element to the block
-        :param element: One of Checkboxes, DatePicker, DateTimePicker, EmailInput, FileInput, MultiSelectMenu,
+        :param element: One of Checkboxes, DatePicker, DatetimePicker, EmailInput, FileInput, MultiSelectMenu,
         NumberInput. PlainTextInput, RadioButtons, RichTextInput, SelectMenu, TimePicker, UrlInput
         :return: self
         """
-        compatible_elements = [Checkboxes, DatePicker, DateTimePicker, EmailInput, FileInput, MultiSelectMenu,
-                              NumberInput, PlainTextInput, RadioButtons, RichTextInput, SelectMenu, TimePicker,
-                              UrlInput]
+        compatible_elements = [Checkboxes, DatePicker, DatetimePicker, EmailInput, FileInput, MultiSelectMenu,
+                               NumberInput, PlainTextInput, RadioButtons, RichTextInput, SelectMenu, TimePicker,
+                               UrlInput]
         if not isinstance(element, tuple(compatible_elements)):
             raise IncorrectTypeError(self, method="add_element", compatible_types=compatible_elements, incompatible_type=element)
         self.element = element

@@ -77,7 +77,15 @@ class WorkflowButton:
         return  self
 
     def add_workflow(self, workflow: Workflow) -> Self:
-        pass
+        """
+        Adds a  Workflow object that contains details about the workflow that will run when the button is clicked.
+        :param workflow: a Workflow object
+        :return: self
+        """
+        if not isinstance(workflow, Workflow):
+            raise IncorrectTypeError(self, method="add_workflow", compatible_types=Workflow, incompatible_type=workflow)
+        self.workflow = workflow
+        return self
 
     def build_to_json(self) -> str:
         # raise error if required fields are not set
