@@ -104,3 +104,20 @@ class WorkflowButton:
             data["accessibility_label"] = self.accessibility_label
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a WorkflowButton instance from its JSON representation
+        :param json: a JSON representation of a WorkflowButton element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.text = PlainText().build_from_json(json["text"])
+        self.workflow = Workflow().build_from_json(json["workflow"])
+        self.action_id = json["action_id"]
+        if "style" in json.keys() and json["style"] is not None:
+            self.style = json["style"]
+        if "accessibility_label" in json.keys() and json["accessibility_label"] is not None:
+            self.accessibility_label = json["accessibility_label"]
+        return self

@@ -110,3 +110,17 @@ class FeedbackButtons:
             data["action_id"] = self.action_id
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a FeedbackButtons instance from its JSON representation
+        :param json: a JSON representation of a FeedbackButtons element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.positive_button = json["positive_button"]
+        self.negative_button = json["negative_button"]
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        return self

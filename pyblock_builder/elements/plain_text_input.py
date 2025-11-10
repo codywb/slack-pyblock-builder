@@ -6,7 +6,7 @@ else:
     from typing_extensions import Self, Literal, Any
 from dataclasses import dataclass
 import json
-from pyblock_builder._internal.errors import (TextLengthError, IncorrectTypeError, RequiredFieldError, ValueLengthError)
+from pyblock_builder._internal.errors import (TextLengthError, IncorrectTypeError, ValueLengthError)
 from pyblock_builder.objects import DispatchActionConfig, PlainText
 
 @dataclass
@@ -132,3 +132,27 @@ class PlainTextInput:
             data["placeholder"] = json.loads(self.placeholder.build_to_json())
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a PlainTextInput instance from its JSON representation
+        :param json: a JSON representation of a PlainTextInput element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "initial_value" in json.keys() and json["initial_value"] is not None:
+            self.initial_value = json["initial_value"]
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "min_length" in json.keys() and json["min_length"] is not None:
+            self.min_length = json["min_length"]
+        if "max_length" in json.keys() and json["max_length"] is not None:
+            self.max_length = json["max_length"]
+        if "dispatch_action_config" in json.keys() and json["dispatch_action_config"] is not None:
+            self.dispatch_action_config = DispatchActionConfig().build_from_json(json["dispatch_action_config"])
+        return self

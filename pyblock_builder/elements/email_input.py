@@ -8,7 +8,7 @@ else:
     from typing_extensions import Self, Literal, Any
 from dataclasses import dataclass
 import json
-from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError)
+from pyblock_builder._internal.errors import (TextLengthError, IncorrectTypeError)
 from pyblock_builder.objects.text import PlainText
 
 @dataclass
@@ -101,3 +101,23 @@ class EmailInput:
             data["dispatch_action_config"] = json.loads(self.dispatch_action_config.build_to_json())
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates an EmailInput instance from its JSON representation
+        :param json: a JSON representation of an EmailInput element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "initial_value" in json.keys() and json["initial_value"] is not None:
+            self.initial_value = json["initial_value"]
+        if "dispatch_action_config" in json.keys() and json["dispatch_action_config"] is not None:
+            self.confirm = DispatchActionConfig().build_from_json(json["dispatch_action_config"])
+        return self

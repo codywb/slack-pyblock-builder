@@ -112,3 +112,23 @@ class RadioButtons:
             data["initial_option"] = json.loads(self.initial_option.build_to_json())
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a RadioButtons instance from its JSON representation
+        :param json: a JSON representation of a RadioButtons element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "options" in json.keys() and json["options"] is not None:
+            self.options = [Option().build_from_json(option) for option in json["options"]]
+        if "initial_option" in json.keys() and json["initial_option"] is not None:
+            self.initial_option = Option().build_from_json(json["initial_option"])
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self

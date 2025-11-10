@@ -86,3 +86,21 @@ class DatetimePicker:
             data["confirm"] = json.loads(self.confirm.build_to_json())
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a DatetimePicker instance from its JSON representation
+        :param json: a JSON representation of a DatetimePicker element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "initial_date_time" in json.keys() and json["initial_date_time"] is not None:
+            self.initial_date_time = json["initial_date_time"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self

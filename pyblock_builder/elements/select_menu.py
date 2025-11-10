@@ -87,6 +87,24 @@ class SelectMenu:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a SelectMenu instance from its JSON representation
+        :param json: a JSON representation of a SelectMenu element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self
+
 @dataclass
 class StaticSelectMenu(SelectMenu):
     """
@@ -211,6 +229,30 @@ class StaticSelectMenu(SelectMenu):
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a StaticSelectMenu instance from its JSON representation
+        :param json: a JSON representation of a StaticSelectMenu element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "options" in json.keys() and json["options"] is not None:
+            self.options = [Option().build_from_json(option) for option in json["options"]]
+        if "option_groups" in json.keys() and json["option_groups"] is not None:
+            self.option_groups = [OptionGroup().build_from_json(group) for group in json["option_groups"]]
+        if "initial_option" in json.keys() and json["initial_option"] is not None:
+            self.initial_option = Option().build_from_json(json["initial_option"])
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self
+
 @dataclass
 class ExternalSelectMenu(SelectMenu):
     """
@@ -276,6 +318,28 @@ class ExternalSelectMenu(SelectMenu):
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ExternalSelectMenu instance from its JSON representation
+        :param json: a JSON representation of a ExternalSelectMenu element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "initial_option" in json.keys() and json["initial_option"] is not None:
+            self.initial_option = Option().build_from_json(json["initial_option"])
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "min_query_length" in json.keys() and json["min_query_length"] is not None:
+            self.min_query_length = json["min_query_length"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self
+
 @dataclass
 class UsersSelectMenu(SelectMenu):
     """
@@ -316,6 +380,26 @@ class UsersSelectMenu(SelectMenu):
             data["initial_user"] = self.initial_user
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a UsersSelectMenu instance from its JSON representation
+        :param json: a JSON representation of a UsersSelectMenu element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "initial_user" in json.keys() and json["initial_user"] is not None:
+            self.initial_user = json["initial_user"]
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self
 
 @dataclass
 class ConversationsSelectMenu(SelectMenu):
@@ -396,6 +480,32 @@ class ConversationsSelectMenu(SelectMenu):
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ConversationsSelectMenu instance from its JSON representation
+        :param json: a JSON representation of a ConversationsSelectMenu element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "initial_conversation" in json.keys() and json["initial_conversation"] is not None:
+            self.initial_conversation = json["initial_conversation"]
+        if "default_to_current_conversation" in json.keys() and json["default_to_current_conversation"] is not None:
+            self.defaults_to_current_conversation = json["default_to_current_conversation"]
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        if "filter" in json.keys() and json["filter"] is not None:
+            self.filter = ConversationsFilter().build_from_json(json["filter"])
+        if "response_url_enabled" in json.keys() and json["response_url_enabled"] is not None:
+            self.response_url_enabled = json["response_url_enabled"]
+        return self
+
 @dataclass
 class ChannelsSelectMenu(SelectMenu):
     """
@@ -436,3 +546,23 @@ class ChannelsSelectMenu(SelectMenu):
             data["initial_channel"] = self.initial_channel
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ChannelsSelectMenu instance from its JSON representation
+        :param json: a JSON representation of a ChannelsSelectMenu element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "initial_channel" in json.keys() and json["initial_channel"] is not None:
+            self.initial_channel = json["initial_channel"]
+        if "focus_on_load" in json.keys() and json["focus_on_load"] is not None:
+            self.is_focus_on_load = json["focus_on_load"]
+        if "placeholder" in json.keys() and json["placeholder"] is not None:
+            self.placeholder = PlainText().build_from_json(json["placeholder"])
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self

@@ -123,3 +123,20 @@ class Checkboxes:
             data["confirm"] = json.loads(self.confirm.build_to_json())
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Checkboxes instance from its JSON representation
+        :param json: a JSON representation of a Checkboxes element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.options = [Option().build_from_json(option) for option in json["options"]]
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "initial_options" in json.keys() and json["initial_options"] is not None:
+            self.initial_options = [Option().build_from_json(option) for option in json["initial_options"]]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self

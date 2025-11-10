@@ -73,3 +73,19 @@ class FileInput:
             data["max_files"] = self.max_files
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates an FileInput instance from its JSON representation
+        :param json: a JSON representation of an FileInput element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "filetypes" in json.keys() and json["filetypes"] is not None:
+            self.filetypes = json["filetypes"]
+        if "max_files" in json.keys() and json["max_files"] is not None:
+            self.max_files = json["max_files"]
+        return self

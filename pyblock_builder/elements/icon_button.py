@@ -139,3 +139,25 @@ class IconButton:
             data["accessibility_label"] = self.accessibility_label
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a IconButton instance from its JSON representation
+        :param json: a JSON representation of a IconButton element, e.g. from the 'elements' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.text = PlainText().build_from_json(json["text"])
+        self.icon = json["icon"]
+        if "action_id" in json.keys() and json["action_id"] is not None:
+            self.action_id = json["action_id"]
+        if "visible_to_user_ids" in json.keys() and json["visible_to_user_ids"] is not None:
+            self.visible_to_user_ids = json["visible_to_user_ids"]
+        if "accessibility_label" in json.keys() and json["accessibility_label"] is not None:
+            self.accessibility_label = json["accessibility_label"]
+        if "value" in json.keys() and json["value"] is not None:
+            self.value = json["value"]
+        if "confirm" in json.keys() and json["confirm"] is not None:
+            self.confirm = ConfirmationDialog().build_from_json(json["confirm"])
+        return self
