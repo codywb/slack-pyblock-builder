@@ -40,7 +40,7 @@ class AppHome:
 
         for block in flattened_blocks:
             if not isinstance(block, Block):
-                raise IncorrectTypeError(self, method="set_blocks", compatible_types=Option, incompatible_type=block)
+                raise IncorrectTypeError(self, method="set_blocks", compatible_types=Block, incompatible_type=block)
             self.blocks.append(block)
         return self
 

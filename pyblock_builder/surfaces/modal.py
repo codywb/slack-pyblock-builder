@@ -6,8 +6,10 @@ else:
     from typing_extensions import Self, Literal, Any, Sequence
 from dataclasses import dataclass, field
 import json
-from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldError, IncorrectTypeError, ItemLengthError)
+from pyblock_builder._internal.errors import (TextLengthError, RequiredFieldsError, IncorrectTypeError, ItemLengthError)
 from pyblock_builder.base_blocks import Block
+from pyblock_builder.objects import PlainText
+from pyblock_builder.blocks import *
 
 @dataclass
 class Modal:
@@ -17,130 +19,218 @@ class Modal:
     unicode format when you receive the view callback payloads.
     """
     type: Literal["modal"] = "modal"
+    title: PlainText | None = None
+    blocks: list[Block] | None = field(default_factory=list)
+    close: PlainText | None = None
+    submit: PlainText | None = None
+    private_metadata: str | None = None
+    callback_id: str | None = None
+    clears_on_close: bool = False
+    notifies_on_close: bool = False
+    external_id: str | None = None
+    submit_disabled: bool | None = None
 
-
-class Modal:
-    """
-    A Python class representing a Modal surface from the Slack BlockKit UI framework
-    """
-    def __init__(self):
-        self._type = "modal"
-        self._callback_id = ""
-        self.blocks = []
-        self._private_metadata = ""
-        self._external_id = ""
-        self._title = {}
-        self._submit = None
-        self._close = None
-        self._clear_on_close = False
-        self._notify_on_close = False
-        self._submit_disabled = False
-        self.view = {
-            "type": self._type,
-            "callback_id": self._callback_id,
-            "blocks": self.blocks
-        }
-
-    def set_callback_id(self, callback_id: str) -> Self:
+    def add_blocks(self, *blocks: Block | Sequence[Block]) -> Self:
         """
-        (Optional) Sets an identifier to recognize interactions and submissions of this particular view. Don't use to
-        store sensitive information (use private_metadata instead).
-        :param callback_id: String; max 255 chars
+        Add one or more blocks that defines the content of the view.
+        :param blocks: one or more Block objects or a list/tuple of Block objects; max 100 blocks
         :return: self
         """
-        self._callback_id = callback_id
-        self.view["callback_id"] = self._callback_id
-        return self
+        flattened_blocks = []
+        for block in blocks:
+            if isinstance(block, (list, tuple)):
+                flattened_blocks.extend(block)
+            else:
+                flattened_blocks.append(block)
 
-    def set_external_id(self, external_id: str) -> Self:
-        """
-        (Optional) Sets a custom identifier that must be unique for all views on a per-team basis
-        :param external_id: String; max 255 chars
-        :return: self
-        """
-        self._external_id = external_id
-        self.view["external_id"] = self._external_id
+        if not 1 <= len(flattened_blocks) <= 100:
+            raise ItemLengthError(self, field="blocks", min_length=1, max_length=100)
+
+        for block in flattened_blocks:
+            if not isinstance(block, Block):
+                raise IncorrectTypeError(self, method="set_blocks", compatible_types=Block, incompatible_type=block)
+            self.blocks.append(block)
         return self
 
     def set_private_metadata(self, metadata: str) -> Self:
         """
-        (Optional) Sets an optional string that will be sent to your app in views_submission and block_actions events
-        :param metadata: String; max 3,000 chars
+        (Optional) Defines a string that will be sent to your app in view_submission and block_actions events.
+        :param metadata: string; max 3,000 characters
         :return: self
         """
-        self._private_metadata = metadata
-        self.view["private_metadata"] = self._private_metadata
+        if not isinstance(metadata, str):
+            raise IncorrectTypeError(self, method="set_private_metadata", compatible_types=str, incompatible_type=metadata)
+        if not 1 <= len(metadata) <= 3000:
+            raise TextLengthError(self, field="private_metadata", min_length=1, max_length=3000)
+        self.private_metadata = metadata
         return self
 
-    def add_blocks(self, *blocks) -> Self:
+    def set_callback_id(self, callback_id: str) -> Self:
         """
-        (Required) Adds the blocks that define the content of the View
-        :param blocks: One or more blocks; max 100; use * when passing a list
+        (Optional) Sets an identifier to recognize interactions and submissions of this particular view.
+        Don't use this to store sensitive information (use private_metadata instead).
+        :param callback_id: string; max 255 characters
         :return: self
         """
-        for block in blocks:
-            self.blocks.append(block.block)
-        self.view["blocks"] = self.blocks
+        if not isinstance(callback_id, str):
+            raise IncorrectTypeError(self, method="set_callback_id", compatible_types=str, incompatible_type=callback_id)
+        if not 1 <= len(callback_id) <= 255:
+            raise TextLengthError(self, field="callback_id", min_length=1, max_length=255)
+        self.callback_id = callback_id
         return self
 
-    def set_title(self, title_text: str) -> Self:
+    def set_external_id(self, external_id: str) -> Self:
         """
-        Sets the title that appears in the top-left corner of the Modal
-        :param title_text: String; max 24 chars
+        (Optional) Sets a custom identifier that must be unique for all views on a per-team basis.
+        :param external_id: string
         :return: self
         """
-        self._title = Text().set_text(title_text)
-        self.view["title"] = self._title.json
+        if not isinstance(external_id, str):
+            raise IncorrectTypeError(self, method="set_external_id", compatible_types=str, incompatible_type=external_id)
+        self.external_id = external_id
         return self
 
-    def set_submit_label(self, submit_text: str) -> Self:
+    def set_title(self, title_text: PlainText) -> Self:
+        """
+        Sets the title that appears in the top-left of the modal.
+        :param title: PlainText object; max 24 characters
+        :return: self
+        """
+        if not isinstance(title_text, PlainText):
+            raise IncorrectTypeError(self, method="set_title", compatible_types=PlainText, incompatible_type=title_text)
+        if not 1 <= len(title_text.text) < 24:
+            raise TextLengthError(self, field="text", min_length=1, max_length=24)
+        self.title = title_text
+        return self
+
+    def set_submit_label(self, submit_text: PlainText) -> Self:
         """
         (Optional) Sets a custom label for the submit button at the bottom-right of the view. Required when an Input
         block is included in blocks.
-        :param submit_text: String; max 24 chars
+        :param submit_text: PlainText object; max 24 chars
         :return: self
         """
-        self._submit = Text().set_text(submit_text)
-        self.view["submit"] = self._submit.json
+        if not isinstance(submit_text, PlainText):
+            raise IncorrectTypeError(self, method="set_submit_label", compatible_types=PlainText, incompatible_type=submit_text)
+        if not 1 <= len(submit_text.text) < 24:
+            raise TextLengthError(self, field="text", min_length=1, max_length=24)
+        self.submit = submit_text
         return self
 
-    def set_close_label(self, close_text: str) -> Self:
+    def set_close_label(self, close_text: PlainText) -> Self:
         """
         (Optional) Sets a custom label for the close button at the bottom-right of the view
-        :param close_text: String; max 24 chars
+        :param close_text: PlainText object; max 24 chars
         :return: self
         """
-        self._close = Text().set_text(close_text)
-        self.view["close"] = self._close.json
+        if not isinstance(close_text, PlainText):
+            raise IncorrectTypeError(self, method="set_close_label", compatible_types=PlainText,
+                                     incompatible_type=close_text)
+        if not 1 <= len(close_text.text) < 24:
+            raise TextLengthError(self, field="text", min_length=1, max_length=24)
+        self.close = close_text
         return self
 
     def clear_on_close(self) -> Self:
         """
-        (Optional) When set to True, clicking on the close button will clear all views in a modal and close it
+        (Optional) When set to True, clicking on the close button will clear all views in a modal and close it.
         :return: self
         """
-        self._clear_on_close = True
-        self.view["clear_on_close"] = self._clear_on_close
+        self.clears_on_close = True
         return self
 
     def notify_on_close(self) -> Self:
         """
         (Optional) Indicates whether Slack will send your request URL a view_closed event when a user clicks the
-        close button
+        close button.
         :return: self
         """
-        self._notify_on_close = True
-        self.view["notify_on_close"] = self._notify_on_close
+        self.notifies_on_close = True
         return self
 
-    def submit_disabled(self) -> Self:
+    def disable_submit(self) -> Self:
         """
         (Optional) When set to True, disables the submit button until the user has completed one or more inputs.
-        This property is for configuration Modals.
+        This property is for legacy configuration modals.
         :return: self
         """
-        self._submit_disabled = True
-        self.view["submit_disabled"] = self._submit_disabled
+        self.submit_disabled = True
+        return self
+
+    def build_to_json(self) -> Self:
+        # raise error if required fields are not set
+        if any([field is None for field in [self.blocks, self.title]]):
+            raise RequiredFieldsError(self, missing_field_names=["blocks", "title"])
+        for block in self.blocks:
+            if isinstance(block, Input):
+                if not self.submit:
+                    raise Exception("The 'submit' field is required when an Input block is included in a Modal's blocks array.")
+
+        # return JSON representation of object using only non-empty fields and removing leading underscores
+        data: dict[str, Any] = {
+            "type": self.type,
+            "title": json.loads(self.title.build_to_json()),
+            "blocks": [json.loads(block.build_to_json()) for block in self.blocks],
+        }
+        if self.private_metadata:
+            data["private_metadata"] = self.private_metadata
+        if self.callback_id:
+            data["callback_id"] = self.callback_id
+        if self.external_id:
+            data["external_id"] = self.external_id
+        if self.close:
+            data["close"] = json.loads(self.close.build_to_json())
+        if self.submit:
+            data["submit"] = json.loads(self.submit.build_to_json())
+        if self.clears_on_close:
+            data["clear_on_close"] = self.clears_on_close
+        if self.notifies_on_close:
+            data["notify_on_close"] = self.notifies_on_close
+        if self.submit_disabled:
+            data["submit_disabled"] = self.submit_disabled
+
+        return json.dumps(data)
+
+    def build_from_json(self, view: dict[str, Any]) -> Self:
+        """
+        Generates a Modal instance
+        :param view: the contents of a "view" property of a Slack API interaction payload from an interactive component
+        """
+        if not isinstance(view, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=view)
+        if "private_metadata" in view.keys() and view["private_metadata"] is not None:
+            self.private_metadata = view["private_metadata"]
+        if "external_id" in view.keys() and view["external_id"] is not None:
+            self.external_id = view["external_id"]
+        if "callback_id" in view.keys() and view["callback_id"] is not None:
+            self.callback_id = view["callback_id"]
+        if "close" in view.keys() and view["close"] is not None:
+            self.close = PlainText().build_from_json(view["close"])
+        if "submit" in view.keys() and view["submit"] is not None:
+            self.submit = PlainText().build_from_json(view["submit"])
+        if "clear_on_close" in view.keys() and view["clear_on_close"] is not None:
+            self.clears_on_close = view["clear_on_close"]
+        if "notify_on_close" in view.keys() and view["notify_on_close"] is not None:
+            self.notifies_on_close = view["notify_on_close"]
+        if "submit_disabled" in view.keys() and view["submit_disabled"] is not None:
+            self.submit_disabled = view["submit_disabled"]
+        compatible_types = {
+            "actions": Actions,
+            "context": Context,
+            "context_actions": ContextActions,
+            "divider": Divider,
+            "file": File,
+            "header": Header,
+            "image": Image,
+            "input": Input,
+            "markdown": Markdown,
+            "rich_text": RichText,
+            "section": Section,
+            "table": Table,
+            "video": Video,
+        }
+        self.blocks = [compatible_types[block["type"]]().build_from_json(block) for block in view["blocks"]]
+        self.title = PlainText().build_from_json(view["title"])
         return self
 
     def open_view(self, request_body, slack_client):
@@ -155,7 +245,7 @@ class Modal:
             trigger_id=request_body["trigger_id"],
             view_id=request_body["view"]["id"],
             hash=request_body["view"]["hash"],
-            view=self.view
+            view=self.build_to_json()
         )
         return result
 
@@ -176,12 +266,12 @@ class Modal:
             result = slack_client.views_update(
                 view_id=view_id,
                 hash=request_body["view"]["hash"],
-                view=self.view
+                view=self.build_to_json()
             )
         else:
             result = slack_client.views_update(
                 view_id=view_id,
-                view=self.view
+                view=self.build_to_json()
             )
         return result
 
@@ -197,7 +287,7 @@ class Modal:
             trigger_id=request_body["trigger_id"],
             view_id=request_body["view"]["id"],
             hash=request_body["view"]["hash"],
-            view=self.view
+            view=self.build_to_json()
         )
         return result
 
@@ -209,7 +299,7 @@ class Modal:
         :param ack: the ack() function received from the Slack Bolt for Python framework
         :return: Slack API response
         """
-        result = ack(response_action="update", view=self.view)
+        result = ack(response_action="update", view=self.build_to_json())
         return result
 
     def push_view_from_submission(self, ack):
@@ -217,9 +307,9 @@ class Modal:
         Uses the attributes set on the class to generate a view payload and push a new view on top of an existing view
         by passing a response_action of type "push" with the newly composed view. Only two additional views may be
         pushed after opening a Modal. Use when responding to a views_submission request (i.e., when a
-        views payload includes any input blocks).
+        view payload includes any input blocks).
         :param ack: the ack() function received from the Slack Bolt for Python framework
         :return: Slack API response
         """
-        result = ack(response_action="push", view=self.view)
+        result = ack(response_action="push", view=self.build_to_json())
         return result
