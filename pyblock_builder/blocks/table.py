@@ -30,6 +30,20 @@ class ColSettings:
 
         return json.dumps(data)
 
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ColSettings instance from its JSON representation
+        :param json: a JSON representation of a ColSettings object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        if "align" in json.keys():
+            self.align = json["align"]
+        if "is_wrapped" in json.keys():
+            self.is_wrapped = json["is_wrapped"]
+        return self
+
 @dataclass
 class Row:
     """
@@ -61,7 +75,8 @@ class Row:
                 cell = {"type": "raw_text", "text": cell}
                 self.cells.append(cell)
             else:
-                self.cells.append(json.loads(cell.build_to_json()))
+                self.cells.append(cell)
+                # self.cells.append(json.loads(cell.build_to_json()))
         return self
 
     def build_to_json(self) -> str:
@@ -69,7 +84,22 @@ class Row:
         if not self.cells:
             raise RequiredFieldError(self, missing_field_names="cells")
         # return JSON representation of object using only non-empty fields and removing leading underscores
-        return json.dumps(self.cells)
+        data: dict[str, Any] = {
+            "cells": [json.loads(cell.build_to_json()) if isinstance(cell, RichText) else cell for cell in self.cells]
+        }
+
+        return json.dumps(data)
+
+    def build_from_json(self, json: list[dict[str, Any]]) -> Self:
+        """
+        Generates a Row instance from its JSON representation
+        :param json: a JSON representation of a Row object, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.cells = [RichText().build_from_json(cell) if json[cell]["type"] == "rich_text" else cell for cell in json]
+        return self
 
 @dataclass
 class Table:
@@ -81,7 +111,7 @@ class Table:
     type: Literal["table"] = "table"
     block_id: str | None = None
     rows: list[Row] | None = field(default_factory=list)
-    column_settings: list[dict[Literal["is_wrapped", "align"], bool | str]] | None = field(default_factory=list)
+    column_settings: list[ColSettings | dict[Literal["is_wrapped", "align"], bool | str]] | None = field(default_factory=list)
 
     def set_block_id(self, block_id: str) -> Self:
         """
@@ -122,7 +152,7 @@ class Table:
         return self
 
     def set_column_settings(self, *settings: ColSettings | dict[Literal["is_wrapped", "align"], bool | str] |
-                                             Sequence[ ColSettings | dict[Literal["is_wrapped", "align"], bool | str]]) -> Self:
+                                             Sequence[ColSettings | dict[Literal["is_wrapped", "align"], bool | str]]) -> Self:
         """
         Defines an array describing column behavior. If there are fewer items in the column_settings array than there
         are columns in the table, then the items in the column_settings array will describe the same number of columns
@@ -144,10 +174,7 @@ class Table:
             if not isinstance(setting, (ColSettings, dict)):
                 raise IncorrectTypeError(self, method="set_column_settings", compatible_types=[ColSettings, dict],
                                          incompatible_type=setting)
-            if isinstance(setting, dict):
-                self.column_settings.append(setting)
-            else:
-                self.column_settings.append(json.loads(setting.build_to_json()))
+            self.column_settings.append(setting)
         return self
 
     def build_to_json(self) -> str:
@@ -162,6 +189,20 @@ class Table:
         if self.block_id:
             data["block_id"] = self.block_id
         if self.column_settings:
-            data["column_settings"] = self.column_settings
+            data["column_settings"] = [json.loads(setting.build_to_json()) if isinstance(setting, ColSettings) else setting for setting in self.column_settings]
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Table instance from its JSON representation
+        :param json: a JSON representation of a Table block, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.block_id = json["block_id"]
+        self.rows = [Row().build_from_json(row) for row in json["rows"]]
+        if "column_settings" in json.keys() and "column_settings" is not None:
+            self.column_settings = [ColSettings().build_from_json(setting) for setting in json["column_settings"]]
+        return self

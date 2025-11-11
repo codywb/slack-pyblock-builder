@@ -177,3 +177,28 @@ class Video:
             data["title_url"] = self.title_url
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Video instance from its JSON representation
+        :param json: a JSON representation of a Video block, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.block_id = json["block_id"]
+        self.alt_text = json["alt_text"]
+        self.title = PlainText().build_from_json(json["title"])
+        self.thumbnail_url = json["thumbnail_url"]
+        self.video_url = json["video_url"]
+        if "author_name" in json.keys() and json["author_name"] is not None:
+            self.author_name = json["author_name"]
+        if "provider_icon_url" in json.keys() and json["provider_icon_url"] is not None:
+            self.provider_icon_url = json["provider_icon_url"]
+        if "provider_name" in json.keys() and json["provider_name"] is not None:
+            self.provider_name = json["provider_name"]
+        if "title_url" in json.keys() and json["title_url"] is not None:
+            self.title_url = json["title_url"]
+        if "description" in json.keys() and json["description"] is not None:
+            self.description = PlainText().build_from_json(json["description"])
+        return self

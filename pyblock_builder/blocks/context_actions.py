@@ -73,3 +73,19 @@ class ContextActions:
             data["block_id"] = self.block_id
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a ContextActions instance from its JSON representation
+        :param json: a JSON representation of a ContextActions block, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.block_id = json["block_id"]
+        compatible_types = {
+            "feedback_buttons": FeedbackButtons,
+            "icon_button": IconButton
+        }
+        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
+        return self

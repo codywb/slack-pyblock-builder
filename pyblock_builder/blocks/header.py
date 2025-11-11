@@ -60,3 +60,15 @@ class Header:
             data["block_id"] = self.block_id
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates a Header instance from its JSON representation
+        :param json: a JSON representation of a Header block, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.block_id = json["block_id"]
+        self.text = PlainText().build_from_json(json["text"])
+        return self

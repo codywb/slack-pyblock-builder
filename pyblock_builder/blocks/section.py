@@ -161,6 +161,6 @@ class Section:
                 "workflow_button": WorkflowButton
             }
             self.accessory = compatible_types[json["accessory"]["type"]]().build_from_json(json["accessory"])
-        if "expand" in json.keys() and json["expand"] is True:
-            self.expands = True
+        if "expand" in json.keys():
+            self.expands = json["expand"]
         return self

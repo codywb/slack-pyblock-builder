@@ -109,3 +109,21 @@ class Image:
             data["block_id"] = self.block_id
 
         return json.dumps(data)
+
+    def build_from_json(self, json: dict[str, Any]) -> Self:
+        """
+        Generates an Image instance from its JSON representation
+        :param json: a JSON representation of an Image block, e.g. from the 'blocks' property of a Slack API interaction payload
+        :return: self
+        """
+        if not isinstance(json, dict):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
+        self.block_id = json["block_id"]
+        self.alt_text = json["alt_text"]
+        if "image_url" in json.keys() and json["image_url"] is not None:
+            self.image_url = json["image_url"]
+        if "slack_file" in json.keys() and json["slack_file"] is not None:
+            self.slack_file = SlackFile().build_from_json(json["slack_file"])
+        if "title" in json.keys() and json["title"] is not None:
+            self.title = PlainText().build_from_json(json["title"])
+        return self

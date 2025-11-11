@@ -76,7 +76,7 @@ class Context:
 
     def build_from_json(self, json: dict[str, Any]) -> Self:
         """
-        Generates an Context instance from its JSON representation
+        Generates a Context instance from its JSON representation
         :param json: a JSON representation of a Context block, e.g. from the 'blocks' property of a Slack API interaction payload
         :return: self
         """

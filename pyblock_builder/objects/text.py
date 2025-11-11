@@ -63,8 +63,8 @@ class PlainText(Text):
             raise TypeError("The 'build_from_json' method of the PlainText object requires a text object with a type of 'plain_text'.")
         if json["text"]:
             self.text = json["text"]
-        if not json["emoji"]:
-            self.emoji = False
+        if json["emoji"]:
+            self.emoji = json["emoji"]
         return self
 
 @dataclass
@@ -97,5 +97,5 @@ class MrkdwnText(Text):
         if json["text"]:
             self.text = json["text"]
         if json["verbatim"]:
-            self.verbatim = True
+            self.verbatim = json["verbatim"]
         return self
