@@ -96,9 +96,9 @@ class Row:
         :param json: a JSON representation of a Row object, e.g. from the 'blocks' property of a Slack API interaction payload
         :return: self
         """
-        if not isinstance(json, dict):
-            raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.cells = [RichText().build_from_json(cell) if json[cell]["type"] == "rich_text" else cell for cell in json]
+        if not isinstance(json, list):
+            raise IncorrectTypeError(self, method="build_from_json", compatible_types=list, incompatible_type=json)
+        self.cells = [RichText().build_from_json(cell) if cell["type"] == "rich_text" else cell for cell in json]
         return self
 
 @dataclass
@@ -201,8 +201,9 @@ class Table:
         """
         if not isinstance(json, dict):
             raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.block_id = json["block_id"]
+        if "block_id" in json.keys() and json["block_id"] is not None:
+            self.block_id = json["block_id"]
         self.rows = [Row().build_from_json(row) for row in json["rows"]]
-        if "column_settings" in json.keys() and "column_settings" is not None:
+        if "column_settings" in json.keys() and json["column_settings"] is not None:
             self.column_settings = [ColSettings().build_from_json(setting) for setting in json["column_settings"]]
         return self

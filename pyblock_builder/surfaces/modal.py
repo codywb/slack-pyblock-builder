@@ -18,6 +18,7 @@ class Modal:
     """
     type: Literal["modal"] = "modal"
 
+
 class Modal:
     """
     A Python class representing a Modal surface from the Slack BlockKit UI framework

@@ -77,7 +77,8 @@ class RichText:
         """
         if not isinstance(json, dict):
             raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.block_id = json["block_id"]
+        if "block_id" in json.keys() and json["block_id"] is not None:
+            self.block_id = json["block_id"]
         compatible_types = {
             "rich_text_section": RichTextSection,
             "rich_text_list": RichTextList,

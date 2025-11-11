@@ -53,7 +53,7 @@ class File:
         """
         if not isinstance(source, str):
             raise IncorrectTypeError(self, method="set_source", compatible_types=str, incompatible_type=source)
-        if self.source is not "remote": # may be updated in later versions to accept other values
+        if self.source != "remote": # may be updated in later versions to accept other values
             raise IncorrectValueError(self, method="set_source", acceptable_values="remote", unacceptable_value=source)
         self.source = source
         return self
@@ -81,7 +81,8 @@ class File:
         """
         if not isinstance(json, dict):
             raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.block_id = json["block_id"]
+        if "block_id" in json.keys() and json["block_id"] is not None:
+            self.block_id = json["block_id"]
         self.external_id = json["external_id"]
         self.source = json["source"]
         return self

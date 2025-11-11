@@ -133,7 +133,8 @@ class Section:
         """
         if not isinstance(json, dict):
             raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
-        self.block_id = json["block_id"]
+        if "block_id" in json.keys() and json["block_id"] is not None:
+            self.block_id = json["block_id"]
         if "text" in json.keys() and json["text"] is not None:
             if json["text"]["type"] == "plain_text":
                 self.text = PlainText().build_from_json(json["text"])
