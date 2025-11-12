@@ -149,14 +149,14 @@ class Input:
             "checkboxes": Checkboxes,
             "datepicker": DatePicker,
             "datetimepicker": DatetimePicker,
-            "multi_static_select_menu": MultiStaticSelectMenu,
-            "multi_users_select_menu": MultiUsersSelectMenu,
-            "multi_channels_select_menu": MultiChannelsSelectMenu,
-            "multi_conversations_select_menu": MultiConversationsSelectMenu,
-            "static_select_menu": StaticSelectMenu,
-            "users_select_menu": UsersSelectMenu,
-            "channels_select_menu": ChannelsSelectMenu,
-            "conversations_select_menu": ConversationsSelectMenu,
+            "multi_static_select": MultiStaticSelectMenu,
+            "multi_users_select": MultiUsersSelectMenu,
+            "multi_channels_select": MultiChannelsSelectMenu,
+            "multi_conversations_select": MultiConversationsSelectMenu,
+            "static_select": StaticSelectMenu,
+            "users_select": UsersSelectMenu,
+            "channels_select": ChannelsSelectMenu,
+            "conversations_select": ConversationsSelectMenu,
             "radio_buttons": RadioButtons,
             "rich_text_input": RichTextInput,
             "time_picker": TimePicker,
@@ -166,5 +166,5 @@ class Input:
             "email_input": EmailInput,
             "file_input": FileInput
         }
-        self.elements = [compatible_types[element["type"]]().build_from_json(element) for element in json["elements"]]
+        self.element = compatible_types[json["element"]["type"]]().build_from_json(json["element"])
         return self

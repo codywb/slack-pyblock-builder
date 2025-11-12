@@ -61,9 +61,9 @@ class PlainText(Text):
             raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
         if not json["type"] == "plain_text":
             raise TypeError("The 'build_from_json' method of the PlainText object requires a text object with a type of 'plain_text'.")
-        if json["text"]:
+        if "text" in json.keys() and json["text"] is not None:
             self.text = json["text"]
-        if json["emoji"]:
+        if "emoji" in json.keys() and json["emoji"] is not None:
             self.emoji = json["emoji"]
         return self
 
@@ -94,8 +94,8 @@ class MrkdwnText(Text):
             raise IncorrectTypeError(self, method="build_from_json", compatible_types=dict, incompatible_type=json)
         if not json["type"] == "mrkdwn":
             raise TypeError("The 'build_from_json' method of the MrkdwnText object requires a text object with a type of 'mrkdwn'.")
-        if json["text"]:
+        if "text" in json.keys() and json["text"] is not None:
             self.text = json["text"]
-        if json["verbatim"]:
+        if "verbatim" in json.keys() and json["verbatim"] is not None:
             self.verbatim = json["verbatim"]
         return self
